@@ -1,0 +1,14 @@
+.home__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.home__container a {
+  color: white;
+  text-decoration: none;
+  font-size: 25px;
+}
+
+.home__container h1 {
+  font-size: 46px;
+}

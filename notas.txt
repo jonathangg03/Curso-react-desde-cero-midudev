@@ -1,72 +1,100 @@
-Crea una app con React usando create-react-app
-
-create-react-app:
-  -Utilidad oficial de FB.
-  -Crea rapido una app sencilla.
-  -Se puede llegar a producción, pero no tiene renderizado en el servidor.
-  -Para proyectos que no necesiten tanto SEO, porque crea los estaticos para enviarlos a producción.
-  -No es tan extensa como Next.js, ni tan extensa como crear nuestra propia configuración.
-
-Una vez creada la aplicación, tenemos 4 scripts:
-  -start: Levantar el servidor local.
-  -build: Crear los estaticos.
-  -test: Correr las pruebas.
-  -eject: Configurar npx por aparte. No es recomendable.
-
-Otras configuraciones del package.json:
-  -eslintConfig: Viene con una configuración de eslint predefinida.
-  -browsersList: Lista de buscadores donde podrá correr. 
-
-Carpeta public:
-  -Donde se colocan los estaticos que se verán en el sitio.
-
-Carpeta src:
-  -Todo lo que sea código.
-  -Notar que tambien tenemos un .svg, pues tambien es código, y no estaticos.
-
-useEffect y su segundo parametro:
-  -El 2do parametro del useEffect es necesario sí su función cambia el estado.
-  -Esto porque el useEffect se ejecuta siempre al renderizar el componente, pero al
-    cambiar el estado hace que se ejecute el componente de nuevo, haciendo que el
-    efecto se vuelva a ejecutar infinitamente.
-
-fetching en un componente:
-  -Estamos haciendo el fetching de datos en el efecto del componente, y con esos datos
-    cambiamos el estado.
-  -En nuestro caso, solo estamos ejecutando el efecto la primer vez.
-  -Esto tiene un detalle, que es muy raro hacerlo así, para corregirlo hay varias
-    formas.
-  -Lo minimo es llevar toda la función del fetching a un archivo aparte, y dentro del
-    effect ejecutar esa función de fetching, y con ella, cambiar el estado.
-
-Error cuando el parametro esperado es un objeto:
-  -Sí tenemos una función que como parametro tenga un objeto, y dentro de esa función
-    estamos usando un elemento de ese objeto, en caso de que no coloquemos ese param.
-    al ejecutar la función nos dará error.
-  -Para evitarlo, debemos colocar, al declarar la función, que ese parametro tenga como
-    valor por defecto un objeto vacío.
-  -Tambien, al tener un objeto como parametro, al declarar la función, a los elementos
-    de ese objeto podemos colocarle valores por defecto, para ello debemos usar el '='
-    en lugar de los ":".
-  -En estos casos, al ejecutar la función, igual, debemos darle como valor a ese 
-    parametro un objeto
-
-Dependencias del useEffect:
-  -Sí el componente en el que estamos usando el useEffect tiene props, o tiene estado,
-    probablemente nos mande unn warning en el useEffect sí no le colocamos como
-    dependencias ese estado y props.
-  -Esto es porque, el useEffect, sí no tiene dependencias solo se ejecuta una vez, es
-    decir, solo renderizará el componente una vez.
-  -Ahorá, como el componente se vuelve a renderizar cada vez que las props o el estado
-    cambien, debemos colocar estas como dependencias del useEffect, para que el
-    componente se renderice cuando estas cambien.
+Creando Custom Hooks y usando context para conseguir estado global
 
 wouter:
-  -Una dependencia que es alternativa a react-router-dom, pero mucho más ligera.
-  -Se instala con ese mismo nombre.
-  -Para usarlo, importamos Route de wouter.
-  -Este lo colocamos como un componente con las props path y component, donde
-    definimos la ruta y el componente a renderizar en esa ruta.
-  -Sí tenemos un argumento en la ruta lo colocamos con "/:argument".
-  -Este lo recuperamos del componente con props.params.argument.
-  -Tambien tiene el elemento Link, para sustituir los <a>, con su prop "to".
+  -Estamos colocando en el app todas las rutas.
+  -De esta forma, el App se convierte como en el enrutador.
+
+useLocation:
+  -Hook de wouter.
+  -Lo colocamos en el cuerpo del componente, esto nos retorna un array de 2 
+    posiciones:
+      .La ruta en la que estamos.
+      .Una función para navegar de forma programatica (sin usar el Link).
+
+-Para proyectos de producción muy grandes, usaremos react-router-dom, sí son
+  personales, podemos usar wouter.
+
+Guardar ultima busqueda:
+  -Podemos ver que sí hacemos una busqueda nos muestra los gifs de esa busqueda.
+  -Si vamos a la home, nos mostrará la ultima busqueda.
+  -Esto lo hacemos en el hook.
+  -Cuando realizamos la busqueda, colocamos en localStorage la ultima keyword
+    que buscamos.
+  -Sí no obtenemos una keyword al usar el hook, debe hacer la busqueda con la que
+    esté en el localStorage.
+
+Nota para empezar con el contexto:
+  -Vamos a usar el contexto para que al dar click en un gif, nos muestre solo ese
+    gif y la información.
+  -Esto lo podríamos hacer simplemente haciendo un llamado a la API para recuperar
+    su info. que sería lo más optimo.
+  -Pero, lo haremos con context solo para verlo como ejemplo.
+
+Contexto:
+  -Se podría entender como un objeto de React al que pueden acceder todos los
+    componentes sin que se les pase ni por parametro, ni por props, ni por nada.
+  -Usaremos un hook para acceder a el.
+  -El gif al que le daremos click lo guardaremos en ese objeto.
+  -Podemos tener más de un context.
+
+Creación del contexto:
+  -Lo creamos en context > StaticContext.js.
+  -En una constante, almacenamos React.Context() y le pasamos un objeto por
+    parametro.
+  -Ese objeto tendrá los valores iniciales de ese contexto pero solo para los
+    componentes que intenten consumir ese contexto sin tener acceso a el por no
+    tener el provider.
+  -Esto significa que sin provider aun así podremos acceder al contexto.
+  -Sí no queremos ninguno, colocamos un objeto vacío.
+  -Exportamos el contexto.
+
+Proveer ese contexto:
+  -El contexto tiene dos partes, el proveedor y el consumidor.
+  -El proveedor será el elemento que provee a los componentes de ese contexto, y
+    los componentes que lo utilicen son los consumidores.
+  -Entonces, sí queremos proveer a toda la aplicación del contexto, debemos escoger
+    algún elemento donde la aplicación este completa.
+  -En nuestro caso la App, que es el router, y donde tenemos todas las rutas.
+  -Entonces, importamos el contexto creado.
+  -Como JSX, encapsularemos todos los componentes que estamos renderizando con el
+    provider del Contexto: <Context.Provider><Componentes /> </>.
+  -Ahorá, solamente lo que esté dentro del provider, tendrá acceso al contexto.
+  -Debemos pasar una prop 'value', que tendrá el valor inicial del contexto para
+    los elementos que sí tienen el provider. Será un objeto.
+  -Como value no tiene que ser un objeto, generalmente lo usamos así, pero
+    no es una regla.
+
+Personalizar el provider:
+  -Al crear un contexto, podemos hacer que este tenga un provider a la hora de
+    declararlo, y al usarlo, no haya que pasarle el value.
+  -Esto nos dá la ventaja de poder usar el estado dentro del contexto.
+  -Para ello, exportaremos de forma nombrada una función, que tendrá las props
+    como parametro. De ellas necesitamos children.
+  -Aquí, retornaremos el context.provider de la misma manera, pero esto envolverá
+    children.
+  -En nuestro caso, como que eremos usar estado, usaremos useState, y ambos 
+    elementos de este los pasaremos al value dentro de un objeto.
+  -Ahora, esta función encapsulará como un provider, sin que haya que pasarle el
+    value.
+  -Finalmente, el export default que sería el contexto lo usaremos de la misma
+    manera.
+  -Lo que haremos ahora es que, como en el contexto ya tenemos un estado que será
+    global, en el guardaremos los gifs, y ya no en el estado de un componente, 
+    cambiamos el hook que habiamos creado para que use el contexto, y no su estado
+    interno.
+
+-El problema que hay en esto, es que al hacerlo, sí recargamos desde la página
+  de los detalles, sin venir de la página en la que solicitamos los gifs, el
+  contexto no va a tener nada en su estado.
+
+-En este caso, sí una de las soluciones sería hacer la petición en caso de que 
+  el estado este vacío.
+
+-Pero aun así el context nos ahorro llamadas, puesto que ya tenia en su estado
+  gifs, internamente los filtro por el que queríamos y listo, solo hizo una llamada.
+
+-El custom hook useGlobalGifs lo que hace es traer el contexto, y es él quien le
+  dará la info al componente Detail.
+-Esto es un hook de solo lectura, que es un custom hook que solamente lee info, y
+  la almacena, entonces al traer el hook nos trae la información. En este caso
+  la traemos del contexto.
