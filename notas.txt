@@ -1,0 +1,26 @@
+Componentes, State, JSX
+
+innerHTML:
+  -Propiedad para agregar contenido HTML a un elemento del DOM.
+  -Como valor le colocamos un string con las etiquetas HTML que vamos a agregar.
+
+Clases o estado:
+  -Mediante un evento podemos añadir o quitar al target de ese evento clases con classList.
+  -Esto no es del todo buena practica en React.
+  -Lo correcto sería tener un estado, y mediante este estado validar sí al elemento hay que 
+    agregar a un valor en la prop className.
+
+Valores de las props por defecto:
+  -A veces, renderizamos el valor de una prop, pero, puede que esa prop no venga.
+  -Una solucion es darle a la prop un valor por defectp en caso de que no venga.
+  -Eso se hata desestructurando las props, y ahí, le damos a la prop un valor.
+  -Ese valor solo se aplicará sí esa prop no tiene un valor.
+
+Renderizado condicional:
+  -Otra forma de soluciónar lo anterior, es validar sí alguna props nos llegó con un
+    valor.
+  -En caso de que llegará, renderizamos el componente normal.
+  -En caso contrario, renderizaremos un componente distinto, con ciertos cambios, o
+    totalmente distinto.
+  -Dentro de ese mismo componente podemos hacer validaciones para renderizar cosas 
+    distintas.
