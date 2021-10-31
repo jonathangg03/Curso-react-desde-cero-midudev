@@ -1,26 +1,62 @@
-Componentes, State, JSX
+Crea una app con React usando create-react-app
 
-innerHTML:
-  -Propiedad para agregar contenido HTML a un elemento del DOM.
-  -Como valor le colocamos un string con las etiquetas HTML que vamos a agregar.
+create-react-app:
+  -Utilidad oficial de FB.
+  -Crea rapido una app sencilla.
+  -Se puede llegar a producción, pero no tiene renderizado en el servidor.
+  -Para proyectos que no necesiten tanto SEO, porque crea los estaticos para enviarlos a producción.
+  -No es tan extensa como Next.js, ni tan extensa como crear nuestra propia configuración.
 
-Clases o estado:
-  -Mediante un evento podemos añadir o quitar al target de ese evento clases con classList.
-  -Esto no es del todo buena practica en React.
-  -Lo correcto sería tener un estado, y mediante este estado validar sí al elemento hay que 
-    agregar a un valor en la prop className.
+Una vez creada la aplicación, tenemos 4 scripts:
+  -start: Levantar el servidor local.
+  -build: Crear los estaticos.
+  -test: Correr las pruebas.
+  -eject: Configurar npx por aparte. No es recomendable.
 
-Valores de las props por defecto:
-  -A veces, renderizamos el valor de una prop, pero, puede que esa prop no venga.
-  -Una solucion es darle a la prop un valor por defectp en caso de que no venga.
-  -Eso se hata desestructurando las props, y ahí, le damos a la prop un valor.
-  -Ese valor solo se aplicará sí esa prop no tiene un valor.
+Otras configuraciones del package.json:
+  -eslintConfig: Viene con una configuración de eslint predefinida.
+  -browsersList: Lista de buscadores donde podrá correr. 
 
-Renderizado condicional:
-  -Otra forma de soluciónar lo anterior, es validar sí alguna props nos llegó con un
-    valor.
-  -En caso de que llegará, renderizamos el componente normal.
-  -En caso contrario, renderizaremos un componente distinto, con ciertos cambios, o
-    totalmente distinto.
-  -Dentro de ese mismo componente podemos hacer validaciones para renderizar cosas 
-    distintas.
+Carpeta public:
+  -Donde se colocan los estaticos que se verán en el sitio.
+
+Carpeta src:
+  -Todo lo que sea código.
+  -Notar que tambien tenemos un .svg, pues tambien es código, y no estaticos.
+
+useEffect y su segundo parametro:
+  -El 2do parametro del useEffect es necesario sí su función cambia el estado.
+  -Esto porque el useEffect se ejecuta siempre al renderizar el componente, pero al
+    cambiar el estado hace que se ejecute el componente de nuevo, haciendo que el
+    efecto se vuelva a ejecutar infinitamente.
+
+fetching en un componente:
+  -Estamos haciendo el fetching de datos en el efecto del componente, y con esos datos
+    cambiamos el estado.
+  -En nuestro caso, solo estamos ejecutando el efecto la primer vez.
+  -Esto tiene un detalle, que es muy raro hacerlo así, para corregirlo hay varias
+    formas.
+  -Lo minimo es llevar toda la función del fetching a un archivo aparte, y dentro del
+    effect ejecutar esa función de fetching, y con ella, cambiar el estado.
+
+Error cuando el parametro esperado es un objeto:
+  -Sí tenemos una función que como parametro tenga un objeto, y dentro de esa función
+    estamos usando un elemento de ese objeto, en caso de que no coloquemos ese param.
+    al ejecutar la función nos dará error.
+  -Para evitarlo, debemos colocar, al declarar la función, que ese parametro tenga como
+    valor por defecto un objeto vacío.
+  -Tambien, al tener un objeto como parametro, al declarar la función, a los elementos
+    de ese objeto podemos colocarle valores por defecto, para ello debemos usar el '='
+    en lugar de los ":".
+  -En estos casos, al ejecutar la función, igual, debemos darle como valor a ese 
+    parametro un objeto
+
+Dependencias del useEffect:
+  -Sí el componente en el que estamos usando el useEffect tiene props, o tiene estado,
+    probablemente nos mande unn warning en el useEffect sí no le colocamos como
+    dependencias ese estado y props.
+  -Esto es porque, el useEffect, sí no tiene dependencias solo se ejecuta una vez, es
+    decir, solo renderizará el componente una vez.
+  -Ahorá, como el componente se vuelve a renderizar cada vez que las props o el estado
+    cambien, debemos colocar estas como dependencias del useEffect, para que el
+    componente se renderice cuando estas cambien.
