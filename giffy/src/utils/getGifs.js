@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const API_KEY = 'EqRDz5ZokdTdgGnKd41ADmK7k3NxG2Cc'
 
 export default function getGifs({ keyword = 'morty' } = {}) {

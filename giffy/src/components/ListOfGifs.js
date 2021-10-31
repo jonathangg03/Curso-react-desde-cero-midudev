@@ -2,12 +2,20 @@ import { useEffect, useState } from 'react'
 import getGifs from '../utils/getGifs'
 import Gif from './Gif'
 
-export default function ListOfGifs({ keyword }) {
+export default function ListOfGifs({ params }) {
+  const [loading, setLoading] = useState(false)
+  const { keyword } = params
   const [gifs, setGifs] = useState([])
 
   useEffect(() => {
-    getGifs({ keyword }).then((gifs) => setGifs(gifs))
+    setLoading(true)
+    getGifs({ keyword }).then((gifs) => {
+      setGifs(gifs)
+      setLoading(false)
+    })
   }, [keyword])
+
+  if (loading) return <div>Loading...</div>
 
   return (
     <div>

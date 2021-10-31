@@ -1,15 +1,16 @@
 import ListOfGifs from './components/ListOfGifs'
 import './App.css'
-import { useState } from 'react'
+import { Link, Route } from 'wouter'
 
 function App() {
-  const [keyword, setKeyword] = useState('cat')
-
   return (
     <div className='App'>
       <section className='App-content'>
-        <button onClick={() => setKeyword('panda')}>Cambiar</button>
-        <ListOfGifs keyword={keyword} />
+        <h1>App</h1>
+        <Link to='/gif/pandas'>Gifs de Pandas</Link>
+        <Link to='/gif/cat'>Gifs de Gatos</Link>
+        <Link to='/gif/koala'>Gifs de Koalas</Link>
+        <Route path='/gif/:keyword' component={ListOfGifs} />
       </section>
     </div>
   )

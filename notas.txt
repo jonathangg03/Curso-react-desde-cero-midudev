@@ -60,3 +60,13 @@ Dependencias del useEffect:
   -Ahorá, como el componente se vuelve a renderizar cada vez que las props o el estado
     cambien, debemos colocar estas como dependencias del useEffect, para que el
     componente se renderice cuando estas cambien.
+
+wouter:
+  -Una dependencia que es alternativa a react-router-dom, pero mucho más ligera.
+  -Se instala con ese mismo nombre.
+  -Para usarlo, importamos Route de wouter.
+  -Este lo colocamos como un componente con las props path y component, donde
+    definimos la ruta y el componente a renderizar en esa ruta.
+  -Sí tenemos un argumento en la ruta lo colocamos con "/:argument".
+  -Este lo recuperamos del componente con props.params.argument.
+  -Tambien tiene el elemento Link, para sustituir los <a>, con su prop "to".
