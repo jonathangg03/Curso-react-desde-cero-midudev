@@ -1,100 +1,51 @@
-Creando Custom Hooks y usando context para conseguir estado global
+Lazy load, suspense y paginación con React
 
-wouter:
-  -Estamos colocando en el app todas las rutas.
-  -De esta forma, el App se convierte como en el enrutador.
+-Muchas veces, al traer resultados de una API, sí son texto podría venir como:
+  'esto%20es%20una%20prueba'. Esto se soluciona con el metodo decodeURI(texto) que 
+  sustituye la parte no entendible por espacios.
 
-useLocation:
-  -Hook de wouter.
-  -Lo colocamos en el cuerpo del componente, esto nos retorna un array de 2 
-    posiciones:
-      .La ruta en la que estamos.
-      .Una función para navegar de forma programatica (sin usar el Link).
+Importar sin usar los puntos.
+  -En la raiz del proyecto creamos el archivo jsconfig.json.
+  -Ingresamos lo siguiente: {"compilerOptions": {"baseUrl": "src"}}.
 
--Para proyectos de producción muy grandes, usaremos react-router-dom, sí son
-  personales, podemos usar wouter.
+Intersection observer:
+  -Vamos a usar el intersection observer para renderizar (y hacer el fetching) de las
+    tendencias que están al final de la página.
+  -Para ello, no vamos a exportar el componente que teniamos creado, sino otro que 
+    crearemos más abajo.
+  -En este segundo tendremos un estado para definir sí el componente se mostrará o no,
+    este estado lo cambiaremos dentro de la función del intersection observer.
+  -El intersecion observer lo haremos completo dentro del useEffect.
+  -Su función debe cambiar el estado.
+  -Segun este estado, retornariamos el componente que teniamos antes o no, sí el estado
+    esta en false (el elemento no está en pantalla) retornamos null.
+  -El elemento que observará el intersection observer será el elemento que encapsula todo
+    este segundo componente (con useRef), y dentro de este encapsulador es que validamos
+    el estado.
 
-Guardar ultima busqueda:
-  -Podemos ver que sí hacemos una busqueda nos muestra los gifs de esa busqueda.
-  -Si vamos a la home, nos mostrará la ultima busqueda.
-  -Esto lo hacemos en el hook.
-  -Cuando realizamos la busqueda, colocamos en localStorage la ultima keyword
-    que buscamos.
-  -Sí no obtenemos una keyword al usar el hook, debe hacer la busqueda con la que
-    esté en el localStorage.
+Problema con este intersection observer:
+  -Es posible que veamos que desde el inicio se carguen las tendencias.
+  -Esto es porque al inicio, no hay gifs, entonces al puro inicio las tendencias estarán
+    en la pantalla, aunque no se vean.
+  -Esto lo podemos solucionar sí al contenedor de los gifs le colocamos un alto minimo 
+    para que las tendencias no se vean.
 
-Nota para empezar con el contexto:
-  -Vamos a usar el contexto para que al dar click en un gif, nos muestre solo ese
-    gif y la información.
-  -Esto lo podríamos hacer simplemente haciendo un llamado a la API para recuperar
-    su info. que sería lo más optimo.
-  -Pero, lo haremos con context solo para verlo como ejemplo.
+Desconexiones del intersecion observer:
+  -Como una vez cargado las tendencias no queremos seguir observando, despues de
+    rederizadas usamos el metodo disconnect() del intersection observer.
+  -El callback de los useEffect puede retornar una función para limpiar cosas como 
+    desuscripciónes. En nuestro caso, dentro de esa función vamos a desconectarnos()
+    de la misma manera.
 
-Contexto:
-  -Se podría entender como un objeto de React al que pueden acceder todos los
-    componentes sin que se les pase ni por parametro, ni por props, ni por nada.
-  -Usaremos un hook para acceder a el.
-  -El gif al que le daremos click lo guardaremos en ese objeto.
-  -Podemos tener más de un context.
-
-Creación del contexto:
-  -Lo creamos en context > StaticContext.js.
-  -En una constante, almacenamos React.Context() y le pasamos un objeto por
-    parametro.
-  -Ese objeto tendrá los valores iniciales de ese contexto pero solo para los
-    componentes que intenten consumir ese contexto sin tener acceso a el por no
-    tener el provider.
-  -Esto significa que sin provider aun así podremos acceder al contexto.
-  -Sí no queremos ninguno, colocamos un objeto vacío.
-  -Exportamos el contexto.
-
-Proveer ese contexto:
-  -El contexto tiene dos partes, el proveedor y el consumidor.
-  -El proveedor será el elemento que provee a los componentes de ese contexto, y
-    los componentes que lo utilicen son los consumidores.
-  -Entonces, sí queremos proveer a toda la aplicación del contexto, debemos escoger
-    algún elemento donde la aplicación este completa.
-  -En nuestro caso la App, que es el router, y donde tenemos todas las rutas.
-  -Entonces, importamos el contexto creado.
-  -Como JSX, encapsularemos todos los componentes que estamos renderizando con el
-    provider del Contexto: <Context.Provider><Componentes /> </>.
-  -Ahorá, solamente lo que esté dentro del provider, tendrá acceso al contexto.
-  -Debemos pasar una prop 'value', que tendrá el valor inicial del contexto para
-    los elementos que sí tienen el provider. Será un objeto.
-  -Como value no tiene que ser un objeto, generalmente lo usamos así, pero
-    no es una regla.
-
-Personalizar el provider:
-  -Al crear un contexto, podemos hacer que este tenga un provider a la hora de
-    declararlo, y al usarlo, no haya que pasarle el value.
-  -Esto nos dá la ventaja de poder usar el estado dentro del contexto.
-  -Para ello, exportaremos de forma nombrada una función, que tendrá las props
-    como parametro. De ellas necesitamos children.
-  -Aquí, retornaremos el context.provider de la misma manera, pero esto envolverá
-    children.
-  -En nuestro caso, como que eremos usar estado, usaremos useState, y ambos 
-    elementos de este los pasaremos al value dentro de un objeto.
-  -Ahora, esta función encapsulará como un provider, sin que haya que pasarle el
-    value.
-  -Finalmente, el export default que sería el contexto lo usaremos de la misma
-    manera.
-  -Lo que haremos ahora es que, como en el contexto ya tenemos un estado que será
-    global, en el guardaremos los gifs, y ya no en el estado de un componente, 
-    cambiamos el hook que habiamos creado para que use el contexto, y no su estado
-    interno.
-
--El problema que hay en esto, es que al hacerlo, sí recargamos desde la página
-  de los detalles, sin venir de la página en la que solicitamos los gifs, el
-  contexto no va a tener nada en su estado.
-
--En este caso, sí una de las soluciones sería hacer la petición en caso de que 
-  el estado este vacío.
-
--Pero aun así el context nos ahorro llamadas, puesto que ya tenia en su estado
-  gifs, internamente los filtro por el que queríamos y listo, solo hizo una llamada.
-
--El custom hook useGlobalGifs lo que hace es traer el contexto, y es él quien le
-  dará la info al componente Detail.
--Esto es un hook de solo lectura, que es un custom hook que solamente lee info, y
-  la almacena, entonces al traer el hook nos trae la información. En este caso
-  la traemos del contexto.
+Polyfill de intersection observer:
+  -Hay navegadores que no soportan el Intersection observer. Para esto usaremos un 
+    polyfill. Lo instalamos con npm install intersection-observer.
+  -Despues del useEffect usamos Promise.resolve().
+  -Como parametro, sí el tipo de IntersectionObserver es distinto de 'undefined' retornamos 
+    IntersectionObserver, de lo contrario, hacemos un import dinamico del polyfill instalado (sin
+    una const).
+  -Esto retorna una promesa, entonces en su then, creamos el intersection observer y 
+    hacemos el observe.
+  -Como habran bloques a los que la const que tiene el intersection observer no llega,
+    tenemos que declarar al inicio del componente esa variable, y que se pueda usar
+    en el resto de bloques.

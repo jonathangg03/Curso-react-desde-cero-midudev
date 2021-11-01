@@ -1,6 +1,4 @@
-import { useState } from 'react'
-
-const API_KEY = 'EqRDz5ZokdTdgGnKd41ADmK7k3NxG2Cc'
+import { API_KEY } from './settings'
 
 export default function getGifs({ keyword = 'morty' } = {}) {
   const API_URL = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${keyword}&limit=25&offset=0&rating=g&lang=en`

@@ -10,7 +10,7 @@ export function useGifs({ keyword } = { keyword: null }) {
     setLoading(true)
 
     const keywordToUse =
-      keyword || localStorage.getItem('lastKeyword') || 'random'
+      keyword || localStorage.getItem('lastKeyword') || 'cats'
     //Sí no hay keyword al usar este hook, toma la keyword de la ultima busqueda.
     getGifs({ keyword: keywordToUse }).then((gifs) => {
       setGifs(gifs)

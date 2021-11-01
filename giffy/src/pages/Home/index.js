@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'wouter'
 import ListOfGifs from '../../components/ListOfGifs'
+import TrendingSearches from '../../components/TrendingSearch'
 import { useGifs } from '../../hooks/useGifs'
 import './Home.css'
-
-const POPULAR_GIFS = ['matrix', 'Venezuela', 'Chile', 'Morty']
 
 export default function Home() {
   const [keyword, setKeyword] = useState('')
@@ -20,7 +19,6 @@ export default function Home() {
   const handleChange = (e) => {
     setKeyword(e.target.value)
   }
-
   return (
     <div>
       <section className='home__container'>
@@ -32,9 +30,7 @@ export default function Home() {
         </form>
         <h3>Ultima busqueda</h3>
         <ListOfGifs gifs={gifs} />
-        {POPULAR_GIFS.map((gif) => (
-          <Link to={`/search/${gif}`}>Gifs de {gif}</Link>
-        ))}
+        <TrendingSearches />
       </section>
     </div>
   )
