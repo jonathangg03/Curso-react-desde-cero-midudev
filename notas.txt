@@ -49,3 +49,42 @@ Polyfill de intersection observer:
   -Como habran bloques a los que la const que tiene el intersection observer no llega,
     tenemos que declarar al inicio del componente esa variable, y que se pueda usar
     en el resto de bloques.
+  -Se hace en un Promise.resolve porque necesitamos que se resuelva sí o sí la promesa.
+
+Import dinamico:
+  -Es cuando solo se coloca el metodo import() y por parametro la dependencia.
+  -Este metodo, al contrario de los imports normales, es asincronoy retorna una promesa.
+
+React Lazy loading y Suspense:
+  -Hacer Lazy loading con React nos ayudará a que el código (componente) que importemos,
+    solo se cargue cuando se necesite.
+  -En nuestro caso, las tendencias las cargaremos solo cuando las necesitemos, definido
+    anteriormente por el Intersection observer.
+  -Importaremos de React Suspense y la dependencia entera.
+  -Vamos a definir una const, debe tener el nombre del componente que se va a renderizar.
+  -Comó valor, debe tener React.Lazy() que tenga como param. una función que retorne un
+    import dinamico con el componente a renderizar.
+  -Ahora, en el return de la función, vamos a colocar en algún lugar el <Suspense>.
+  -Esto encapsulará el componente del React.Lazy, y en su prop fallback definiremos lo 
+    que renderizará mientras el componente no se este cargando (puede ser un texto o
+    un componente, que no es necesario colocarlo en una función dentro de esa prop).
+  -Dentro del suspense regularente habrá una condicional que evalue en que momento
+    renderizar el componente que está en el Lazy.
+  -No es recomendable que se encapsule todos los componentes en el mismo Lazy, sino que
+    cada uno tenga el suyo según lo necesite.
+  -Esto nos ayudará a que no se cargue todo el JS de inicio, porque con el IO definimos
+    cuando llamar a la API, pero aquí definimos cuando cargar el JS.
+
+-Nota: Como fallback podemos usar un componente llamado React Placeholder SVG, que
+  son componentes que son como una plantilla básica del componente que está cargando. Se
+  pueden conseguir varios en internet.
+
+Paginación:
+  -El link de la API tiene el elemento  offset, este elento sirve para definir a partir
+    de que elemento empieza a contar, entonces este es el que vamos a definir cuales
+    elementos traer, sí es 0 empieza desde el 0, sí es 25, trae desde el 25 (hasta el
+    que se definio en el query limit).
+  -Para que esto no afecte el rendimiento, los gifs los tenemos en un estado, lo que 
+    haremos será, con las props previas de ese estado, concatenar los nuevos resultados
+    volviendo a pedir los datos (usamos el metodo concat, concatenando las props viejas
+    con los nuevos resultados).
