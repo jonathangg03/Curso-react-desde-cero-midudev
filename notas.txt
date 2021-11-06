@@ -1,90 +1,33 @@
-Lazy load, suspense y paginación con React
+CSS Grid, infinite Scroll y Test
 
--Muchas veces, al traer resultados de una API, sí son texto podría venir como:
-  'esto%20es%20una%20prueba'. Esto se soluciona con el metodo decodeURI(texto) que 
-  sustituye la parte no entendible por espacios.
+CSS Grid:
+  -Sí tenemos definido el tamaño de las columnas, pero no de las filas (altura) el
+    tamaño se definirá por la altura el elemento hijo con la altura más alta de
+    esa columna.
 
-Importar sin usar los puntos.
-  -En la raiz del proyecto creamos el archivo jsconfig.json.
-  -Ingresamos lo siguiente: {"compilerOptions": {"baseUrl": "src"}}.
+Anchos del css-grid:
+  -Podemos colocar como primer parametro de la función repeat() un valor auto-fill,
+    y segun el tamaño que colocamos como 2do parametro, va a colocar las columnas
+    de ese ancho, pero cuantas puedan haber en la pantalla automaticamente.
+  -Ahorá, sí como 2do param. colocamos el metodo minmax(), donde como primer param.
+    traiga el tamaño minimo, y como 2do el maximo, podemos definir desde cuanto
+    será el tamaño de cada columna y hasta cuanto.
+  -Sí colocamos un tamaño básico en pixeles como minimo, y 1fr como 2do, los
+    espacios sobrantes los tomará cada columna, por haber definido un tamaño de 1fr
+    máximo.
 
-Intersection observer:
-  -Vamos a usar el intersection observer para renderizar (y hacer el fetching) de las
-    tendencias que están al final de la página.
-  -Para ello, no vamos a exportar el componente que teniamos creado, sino otro que 
-    crearemos más abajo.
-  -En este segundo tendremos un estado para definir sí el componente se mostrará o no,
-    este estado lo cambiaremos dentro de la función del intersection observer.
-  -El intersecion observer lo haremos completo dentro del useEffect.
-  -Su función debe cambiar el estado.
-  -Segun este estado, retornariamos el componente que teniamos antes o no, sí el estado
-    esta en false (el elemento no está en pantalla) retornamos null.
-  -El elemento que observará el intersection observer será el elemento que encapsula todo
-    este segundo componente (con useRef), y dentro de este encapsulador es que validamos
-    el estado.
+Masonry:
+  -Es un efecto donde los elementos, segun su tamaño, se adapten hacia la altura
+    de elementos que están arriba y así no gasten espacios ni arriba ni abajo.
+  -Se le añade como valor masonry a la propiedad grid-template-rows.
+  -Aun está en fase de desarrollo, así que todavía no funciona.
+  -Al colocar esta propiedad con este valor, podemos hacer una 'mejora progresiva'
+    que significa que sí un usuario tiene un navegador moderno, pueda cargar cosas
+    que los más antiguos no, pero que en los más antiguos el programa siga 
+    funcionando correctamente.
 
-Problema con este intersection observer:
-  -Es posible que veamos que desde el inicio se carguen las tendencias.
-  -Esto es porque al inicio, no hay gifs, entonces al puro inicio las tendencias estarán
-    en la pantalla, aunque no se vean.
-  -Esto lo podemos solucionar sí al contenedor de los gifs le colocamos un alto minimo 
-    para que las tendencias no se vean.
-
-Desconexiones del intersecion observer:
-  -Como una vez cargado las tendencias no queremos seguir observando, despues de
-    rederizadas usamos el metodo disconnect() del intersection observer.
-  -El callback de los useEffect puede retornar una función para limpiar cosas como 
-    desuscripciónes. En nuestro caso, dentro de esa función vamos a desconectarnos()
-    de la misma manera.
-
-Polyfill de intersection observer:
-  -Hay navegadores que no soportan el Intersection observer. Para esto usaremos un 
-    polyfill. Lo instalamos con npm install intersection-observer.
-  -Despues del useEffect usamos Promise.resolve().
-  -Como parametro, sí el tipo de IntersectionObserver es distinto de 'undefined' retornamos 
-    IntersectionObserver, de lo contrario, hacemos un import dinamico del polyfill instalado (sin
-    una const).
-  -Esto retorna una promesa, entonces en su then, creamos el intersection observer y 
-    hacemos el observe.
-  -Como habran bloques a los que la const que tiene el intersection observer no llega,
-    tenemos que declarar al inicio del componente esa variable, y que se pueda usar
-    en el resto de bloques.
-  -Se hace en un Promise.resolve porque necesitamos que se resuelva sí o sí la promesa.
-
-Import dinamico:
-  -Es cuando solo se coloca el metodo import() y por parametro la dependencia.
-  -Este metodo, al contrario de los imports normales, es asincronoy retorna una promesa.
-
-React Lazy loading y Suspense:
-  -Hacer Lazy loading con React nos ayudará a que el código (componente) que importemos,
-    solo se cargue cuando se necesite.
-  -En nuestro caso, las tendencias las cargaremos solo cuando las necesitemos, definido
-    anteriormente por el Intersection observer.
-  -Importaremos de React Suspense y la dependencia entera.
-  -Vamos a definir una const, debe tener el nombre del componente que se va a renderizar.
-  -Comó valor, debe tener React.Lazy() que tenga como param. una función que retorne un
-    import dinamico con el componente a renderizar.
-  -Ahora, en el return de la función, vamos a colocar en algún lugar el <Suspense>.
-  -Esto encapsulará el componente del React.Lazy, y en su prop fallback definiremos lo 
-    que renderizará mientras el componente no se este cargando (puede ser un texto o
-    un componente, que no es necesario colocarlo en una función dentro de esa prop).
-  -Dentro del suspense regularente habrá una condicional que evalue en que momento
-    renderizar el componente que está en el Lazy.
-  -No es recomendable que se encapsule todos los componentes en el mismo Lazy, sino que
-    cada uno tenga el suyo según lo necesite.
-  -Esto nos ayudará a que no se cargue todo el JS de inicio, porque con el IO definimos
-    cuando llamar a la API, pero aquí definimos cuando cargar el JS.
-
--Nota: Como fallback podemos usar un componente llamado React Placeholder SVG, que
-  son componentes que son como una plantilla básica del componente que está cargando. Se
-  pueden conseguir varios en internet.
-
-Paginación:
-  -El link de la API tiene el elemento  offset, este elento sirve para definir a partir
-    de que elemento empieza a contar, entonces este es el que vamos a definir cuales
-    elementos traer, sí es 0 empieza desde el 0, sí es 25, trae desde el 25 (hasta el
-    que se definio en el query limit).
-  -Para que esto no afecte el rendimiento, los gifs los tenemos en un estado, lo que 
-    haremos será, con las props previas de ese estado, concatenar los nuevos resultados
-    volviendo a pedir los datos (usamos el metodo concat, concatenando las props viejas
-    con los nuevos resultados).
+Cuidado con las referencias:
+  -Cuando usamos useRef, e imprimimos su valor en consola, puede ser que, aunque
+    no tenga actualmente nada, nos muestre un valor.
+  -Esto es porque, la consola, al ser asincrona, puede que lea el valor que tendrá
+    en un futuro, pero que durante el programa, ese valor en realidad no exista.
