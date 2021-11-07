@@ -31,3 +31,52 @@ Cuidado con las referencias:
     no tenga actualmente nada, nos muestre un valor.
   -Esto es porque, la consola, al ser asincrona, puede que lea el valor que tendrá
     en un futuro, pero que durante el programa, ese valor en realidad no exista.
+
+Infinite scroll:
+  -Vamos a tener un elemento div dentro del dom, que sea un 'visor', esto significa que
+    no tendrá contenido, y que solo estará ahí para ser observado por un IO, para que Cuando
+    el VP llegue a mostrarlo (debe estar al final de todo), volver a realizar una solicitud
+    para recibir los datos de la siguiente paginación.
+  -bounce: Esta dependencia lo que hace es que, sí una función se repite muchas veces durante
+    un tiempo determinado, cuando pase ese tiempo, ejecuta dicha función solamente una vez.
+      .Su primer parametro es una función a ejecutar, su 2do el tiempo.
+      .Como se explicó, dicha función no se ejecuta hasta que pase el tiempo.
+  -useCallback: Esté hook recibe como parametro una función a ejecutar, y un array con dependencias
+    similar a useEffect (pero por ahora no vamos a usar dependencias).
+      .Lo que hace es que, cómo cada vez que se renderizá un componente, se vuelven a declarar sus 
+        funciones, esas funciones no se declararán al menos que una de sus dependencias cambie el 
+        valor.
+  -Sí tenemos la función que será el debounce en el cuerpo del componente, está se va a estar
+    declarando cada vez que el componente se renderiza, y como este componente va a estar en constante
+    renderización, podríamos tener problemas.
+  -Una forma de hacerlo es guardar ese debounce dentro de un useRef, y al usarla, la tendremos en el
+    elemento current de ese ref.
+  -La otra es colocandolo dentro de un useCallback. Está fue la que hicimos.
+  -Las dependencias son los elementos que están dentro de la función del 
+    useCallback que por alguna razón pueden cambiar. Esto sirve para que el
+    useCallback use ese valor actualizado.
+
+Casos de uso de useCallback:
+  1-Cuando la función que queremos definir es muy pesada, y queremos que se
+    cree solo cuando lo amerita.
+  1-Cuando necesitamos que la referencia a la función que estamos usando sea
+    exactamente la misma, que es nuestro caso de uso.
+
+React Testing Library:
+  -Para ver mejor la forma en la que podemos obtener la información (queries), 
+    tenemos: https://testing-library.com/docs/react-testing-library/cheatsheet
+  -Aquí podemos ver las formas que tenemos para traer elementos del virtual
+    dom.
+  -El orden en el que vienen es el orden en que más se recomienda recuperarlos.
+
+Pruebas asincronas:
+  -En caso de que un componente sea Lazy, como se renderizará asincronamente
+    debemos usar queries asincronas.
+  -Para ello:
+    .Sí nos fijamos en la tabla, el unico asincorno es findBy, entonces ya
+      no usamos el getBy.
+    .Para isar esta, el cb del test debe tener el async, y al momento de usar
+      findBy tenemos que usar el await.
+    .En caso de probar que la prueba falle, al ser asincrona, lo que va a 
+      esperar es que el elemento esperado se renderice, pero sí no lo encuentra
+      va a agotar el timeout, pues nunca se renderizó lo esperado.

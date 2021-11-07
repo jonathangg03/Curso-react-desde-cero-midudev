@@ -7,7 +7,7 @@ import useNearScreen from 'hooks/useNearScreen'
 export default function SearchResults({ params }) {
   const { keyword } = params
   const { loading, gifs, setPage } = useGifs({ keyword })
-  const externalRef = useRef()
+  const externalRef = useRef() //Creamos externalRef porque useNearScreen al inicio no tiene un elemento del DOM como ref, entonces con el realizamos la validación.
   const { isNearScreen } = useNearScreen({
     externalRef: loading ? null : externalRef,
     once: false
