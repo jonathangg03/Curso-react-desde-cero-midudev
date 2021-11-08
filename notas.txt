@@ -1,82 +1,33 @@
-CSS Grid, infinite Scroll y Test
+Cómo usar React.memo, mejorar el rendimiento y hacer deploy con Vercel de nuestra app de React
 
-CSS Grid:
-  -Sí tenemos definido el tamaño de las columnas, pero no de las filas (altura) el
-    tamaño se definirá por la altura el elemento hijo con la altura más alta de
-    esa columna.
+React Dev Tools:
+  -Profiler: Podemos ver cuando se hizo un renderizado, porque, cuanto tardó cada uno, 
+    pero no está este modo activado para apps en producción.
+  -Components: Ya conocemos esa pestaña, pero, sí vamos a la rueda de ajustes tenemos la
+    opción "Highligths update when components render" nos dibujará un cuadro al rededor de 
+    los componentes cuando sean afectados por un render. Estos cuadros se ven y se quitan
+    casí al momento.
+      .En la opció Profiler, la primer casilla hace que se grabe el porque se renderiza
+        cada componente. Lo vamos a activar.
+  
+Profiler:
+  -Al irnos al profiler, y dar en el boton de grabar, sí escribimos en un input y termina
+    la grabación, todo lo que esté de colores es lo que se ha renderizado.
+  -Sí damos click a algúno, en la parte superior derecha vemos el porque se renderizó.
+  -Las que están debajo a colores son los que se han renderizado por su causa.
+  -El home se renderiza porque los hooks cambian. Esto es porque, al cambiar valor al
+    input, cambia su estado, y hace que se vuelva a renderizar el componente.
+  -Esto es una problema de performance.
+  -Lo que aparece en gris es porque desde que se grabó el profiler no se volvió a 
+    renderizar nada.
 
-Anchos del css-grid:
-  -Podemos colocar como primer parametro de la función repeat() un valor auto-fill,
-    y segun el tamaño que colocamos como 2do parametro, va a colocar las columnas
-    de ese ancho, pero cuantas puedan haber en la pantalla automaticamente.
-  -Ahorá, sí como 2do param. colocamos el metodo minmax(), donde como primer param.
-    traiga el tamaño minimo, y como 2do el maximo, podemos definir desde cuanto
-    será el tamaño de cada columna y hasta cuanto.
-  -Sí colocamos un tamaño básico en pixeles como minimo, y 1fr como 2do, los
-    espacios sobrantes los tomará cada columna, por haber definido un tamaño de 1fr
-    máximo.
+-Cuando un formulario lo tenemos en el componente, normalmente cambiará el estado de ese
+  componente cada vez que tecleamos. La solución a esto es tener el formulario con su
+  propio estado en un componente aparte. Esto pasa con todo, la mayoría de veces el 
+  setState se recomienda en un componente aparte.
 
-Masonry:
-  -Es un efecto donde los elementos, segun su tamaño, se adapten hacia la altura
-    de elementos que están arriba y así no gasten espacios ni arriba ni abajo.
-  -Se le añade como valor masonry a la propiedad grid-template-rows.
-  -Aun está en fase de desarrollo, así que todavía no funciona.
-  -Al colocar esta propiedad con este valor, podemos hacer una 'mejora progresiva'
-    que significa que sí un usuario tiene un navegador moderno, pueda cargar cosas
-    que los más antiguos no, pero que en los más antiguos el programa siga 
-    funcionando correctamente.
+-Otro posible renderizado multiple que podemos tener es en SearchForm, que se lo hace 
+  porque su componente padre se renderiza muchas veces, y cada vez que se renderiza, 
+  vuelve a renderizar este componente. Hay 2 cosas que hay que hacer, el primero encerrar
+  la función que está causandolo en un useCallback.
 
-Cuidado con las referencias:
-  -Cuando usamos useRef, e imprimimos su valor en consola, puede ser que, aunque
-    no tenga actualmente nada, nos muestre un valor.
-  -Esto es porque, la consola, al ser asincrona, puede que lea el valor que tendrá
-    en un futuro, pero que durante el programa, ese valor en realidad no exista.
-
-Infinite scroll:
-  -Vamos a tener un elemento div dentro del dom, que sea un 'visor', esto significa que
-    no tendrá contenido, y que solo estará ahí para ser observado por un IO, para que Cuando
-    el VP llegue a mostrarlo (debe estar al final de todo), volver a realizar una solicitud
-    para recibir los datos de la siguiente paginación.
-  -bounce: Esta dependencia lo que hace es que, sí una función se repite muchas veces durante
-    un tiempo determinado, cuando pase ese tiempo, ejecuta dicha función solamente una vez.
-      .Su primer parametro es una función a ejecutar, su 2do el tiempo.
-      .Como se explicó, dicha función no se ejecuta hasta que pase el tiempo.
-  -useCallback: Esté hook recibe como parametro una función a ejecutar, y un array con dependencias
-    similar a useEffect (pero por ahora no vamos a usar dependencias).
-      .Lo que hace es que, cómo cada vez que se renderizá un componente, se vuelven a declarar sus 
-        funciones, esas funciones no se declararán al menos que una de sus dependencias cambie el 
-        valor.
-  -Sí tenemos la función que será el debounce en el cuerpo del componente, está se va a estar
-    declarando cada vez que el componente se renderiza, y como este componente va a estar en constante
-    renderización, podríamos tener problemas.
-  -Una forma de hacerlo es guardar ese debounce dentro de un useRef, y al usarla, la tendremos en el
-    elemento current de ese ref.
-  -La otra es colocandolo dentro de un useCallback. Está fue la que hicimos.
-  -Las dependencias son los elementos que están dentro de la función del 
-    useCallback que por alguna razón pueden cambiar. Esto sirve para que el
-    useCallback use ese valor actualizado.
-
-Casos de uso de useCallback:
-  1-Cuando la función que queremos definir es muy pesada, y queremos que se
-    cree solo cuando lo amerita.
-  1-Cuando necesitamos que la referencia a la función que estamos usando sea
-    exactamente la misma, que es nuestro caso de uso.
-
-React Testing Library:
-  -Para ver mejor la forma en la que podemos obtener la información (queries), 
-    tenemos: https://testing-library.com/docs/react-testing-library/cheatsheet
-  -Aquí podemos ver las formas que tenemos para traer elementos del virtual
-    dom.
-  -El orden en el que vienen es el orden en que más se recomienda recuperarlos.
-
-Pruebas asincronas:
-  -En caso de que un componente sea Lazy, como se renderizará asincronamente
-    debemos usar queries asincronas.
-  -Para ello:
-    .Sí nos fijamos en la tabla, el unico asincorno es findBy, entonces ya
-      no usamos el getBy.
-    .Para isar esta, el cb del test debe tener el async, y al momento de usar
-      findBy tenemos que usar el await.
-    .En caso de probar que la prueba falle, al ser asincrona, lo que va a 
-      esperar es que el elemento esperado se renderice, pero sí no lo encuentra
-      va a agotar el timeout, pues nunca se renderizó lo esperado.
