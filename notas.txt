@@ -31,3 +31,56 @@ Profiler:
   vuelve a renderizar este componente. Hay 2 cosas que hay que hacer, el primero encerrar
   la función que está causandolo en un useCallback.
 
+UseCallback:
+  -Es un hook que recibe una función por parametro, y dependencias como el 2do param.
+  -En caso de que sus dependencias no cambien, no vuelve a crear la función, es decir,
+    esa funcón no cambia, tiene la misma referencia.
+
+React.Memo():
+  -Vemos que despues de haber creado el useCallback, sigue renderizandose varias veces.
+  -Esto lo corregimos con React.memo(), donde su primer parametro es el componente a
+    renderizar.
+  -Con esto, el export ya no lo tendrá el componente, sino el React.memo().
+  -Esto solucionará el problema, ya que sus props, ya que no vuelve a renderizar el
+    componente sí sus props viejas o nuevas no cambian.
+  -Aunque pongamos solo el useCallback, este componente se sigue renderizando, por que su
+    componente padre se vuelve a renderizar, pero con memo() hacemos que cambie solo cuando 
+    sus props cambien.
+  -El segundo parametro es opcional, es un cb que tiene por parametros las props antiguas
+    y las nuevas, por lo que podemos imprimirlas en consola para ver sí son las mismas o
+    algo está cambiando.
+
+Problema con React.memo() y spread operator:
+  -Sí estamos renderizando un componente y como props le pasamos un spread operator, esto
+    es posible que de error.
+  -Esto se debe a que, los objetos no se validan sí uno tiene las mismas propiedades que
+    el otro, sino que valida que la referencia sea la misma.
+  -Al usar un spred operator, estamos, en el mismo componente, creando un objeto nuevo,
+    diferente al que estamos usando en el mismo spread operator.
+  -Por esto, no es recomendable usar spread operators
+  -Ahora, en esta función podemos crear nuestro propio memo, validando elementos de los
+    objetos con las props, y segun validaciones con estas props, devolver true o false.
+  -El cb siempre retorna true or false dependiendo sí las props son iguales o no.
+
+serve:
+  -Una dependencia que se instala de forma global para correr los estaticos que creamos
+    de nuestras páginas.
+  -Se usa el comando: serve [nombre_carpeta]
+
+Deploy con Vercel:
+  -Instalamos de forma global la dependencia vercel.
+  -En la carpeta del proyecto ejecutamos vercel.
+  -Escogemos la configuración:
+    .Set up and deploy: La carpeta del proyecto, confirmamos.
+    .scope: Sí tenemos varias cuentas, escogemos la que deseamos.
+    .Link: no.
+    .Nombre del proyecto.
+    .Directorio: ./
+    .Confirmamos los scripts con los que se ejecutará para el deploy.
+  -Con esto ya se hará el deploy sin configurar nada.
+  -Ahora, para mandar a producción, debemos correr el comando: vercel --prod. Con esto,
+    subimos al link con la dirección mas corta.
+  -Sí queremos volver a hacer deploy, volvemos a ejecutar el comando: vercel.
+  -Por ahora no está la integración con github, por lo que los cambios que se harán son
+    los que tendremos en nuestra carpeta en local.
+  
