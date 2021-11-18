@@ -1,86 +1,80 @@
-Cómo usar React.memo, mejorar el rendimiento y hacer deploy con Vercel de nuestra app de React
+SEO con React y Deploy integrado con GitHub
 
-React Dev Tools:
-  -Profiler: Podemos ver cuando se hizo un renderizado, porque, cuanto tardó cada uno, 
-    pero no está este modo activado para apps en producción.
-  -Components: Ya conocemos esa pestaña, pero, sí vamos a la rueda de ajustes tenemos la
-    opción "Highligths update when components render" nos dibujará un cuadro al rededor de 
-    los componentes cuando sean afectados por un render. Estos cuadros se ven y se quitan
-    casí al momento.
-      .En la opció Profiler, la primer casilla hace que se grabe el porque se renderiza
-        cada componente. Lo vamos a activar.
-  
-Profiler:
-  -Al irnos al profiler, y dar en el boton de grabar, sí escribimos en un input y termina
-    la grabación, todo lo que esté de colores es lo que se ha renderizado.
-  -Sí damos click a algúno, en la parte superior derecha vemos el porque se renderizó.
-  -Las que están debajo a colores son los que se han renderizado por su causa.
-  -El home se renderiza porque los hooks cambian. Esto es porque, al cambiar valor al
-    input, cambia su estado, y hace que se vuelva a renderizar el componente.
-  -Esto es una problema de performance.
-  -Lo que aparece en gris es porque desde que se grabó el profiler no se volvió a 
-    renderizar nada.
+Problema:
+  -Tenemos un problema, cuando entramos al detalle de un gif, podemos verlo
+    sin problema, pero, sí estamos en ese detalle, y recargamos la página,
+    hay un error.
+  -Esto se debe a que en algún momento, en el contexto, estamos guardando
+    ese gif en especifico, pero, como no estamos pasando por donde
+    solicitamos todos los gifs, no lo va a encontrar.
+  -Tambien recordar, que no estamos pidiendo ningún gif en especifico a
+    la API desde los detalles, sino, se lo pedimos al context.
 
--Cuando un formulario lo tenemos en el componente, normalmente cambiará el estado de ese
-  componente cada vez que tecleamos. La solución a esto es tener el formulario con su
-  propio estado en un componente aparte. Esto pasa con todo, la mayoría de veces el 
-  setState se recomienda en un componente aparte.
+Solución:
+  -Como solución, estamos creando una utilidad que solicite directamente
+    a la API el gif basandonos en su ID.
+  -Esta la usamos en un hook, aquí usamos el hook donde traemos todos
+    los gifs, de esto hacemos un fin basandonos en su ID.
+  -Sí encontro ese gif, lo devolvemos, de lo contrario, usamos la 
+    utilidad de petición de un gif.
 
--Otro posible renderizado multiple que podemos tener es en SearchForm, que se lo hace 
-  porque su componente padre se renderiza muchas veces, y cada vez que se renderiza, 
-  vuelve a renderizar este componente. Hay 2 cosas que hay que hacer, el primero encerrar
-  la función que está causandolo en un useCallback.
+Redirect con wouter:
+  -Todos los routers tienen que tener un componente <redirect/>.
+  -Este lo que hará es retornarnos a la ruta que indique su prop 'to'.
+  -Lo que hacemos es que en lugar de retornar un JSX normal, solo 
+    retornamos este componente, y al ingresar al compontente donde
+    estemos retornando el redirect, nos redirige a la ruta indicada.
 
-UseCallback:
-  -Es un hook que recibe una función por parametro, y dependencias como el 2do param.
-  -En caso de que sus dependencias no cambien, no vuelve a crear la función, es decir,
-    esa funcón no cambia, tiene la misma referencia.
+404:
+  -Al no encontrar un gif, para crear un 404 con wouter, lo que hacemos
+    es crear la ruta /404, y redirigir hacia alla cuando hay un error.
+  -En el frontend, no creamos como tal un 404, ya que no indicamos al
+    navegador este error, eso lo hacemos desde el backend.
+  -Sin embargo, sí le damos la muestra al cliente de que algo malo 
+    ocurrió.
 
-React.Memo():
-  -Vemos que despues de haber creado el useCallback, sigue renderizandose varias veces.
-  -Esto lo corregimos con React.memo(), donde su primer parametro es el componente a
-    renderizar.
-  -Con esto, el export ya no lo tendrá el componente, sino el React.memo().
-  -Esto solucionará el problema, ya que sus props, ya que no vuelve a renderizar el
-    componente sí sus props viejas o nuevas no cambian.
-  -Aunque pongamos solo el useCallback, este componente se sigue renderizando, por que su
-    componente padre se vuelve a renderizar, pero con memo() hacemos que cambie solo cuando 
-    sus props cambien.
-  -El segundo parametro es opcional, es un cb que tiene por parametros las props antiguas
-    y las nuevas, por lo que podemos imprimirlas en consola para ver sí son las mismas o
-    algo está cambiando.
+Hook para el SEO:
+  -Vamos primero a realizar un hook para el SEO, para mostrar como
+    funcionan desde el inicio.
+  -Para ello, en un hook, simplemente recibimos el titulo, y para colocarlo
+    en la pestaña, usamos: document.title = 'Nuevo titulo'.
+  -En cualquier página podemos ahora usar el hook, este por ahora no
+    returna nada, solo coloca el title.
+  -Esto tiene un problema, es que al usar el hook, ahora todas las
+    páginas tendrán el mismo title.
+  -Sí no necesitamos gran cosa, podríamos usar el hook useTitle que creamos, donde
+    manejamos tanto el titulo como la descripción de cada página.
 
-Problema con React.memo() y spread operator:
-  -Sí estamos renderizando un componente y como props le pasamos un spread operator, esto
-    es posible que de error.
-  -Esto se debe a que, los objetos no se validan sí uno tiene las mismas propiedades que
-    el otro, sino que valida que la referencia sea la misma.
-  -Al usar un spred operator, estamos, en el mismo componente, creando un objeto nuevo,
-    diferente al que estamos usando en el mismo spread operator.
-  -Por esto, no es recomendable usar spread operators
-  -Ahora, en esta función podemos crear nuestro propio memo, validando elementos de los
-    objetos con las props, y segun validaciones con estas props, devolver true o false.
-  -El cb siempre retorna true or false dependiendo sí las props son iguales o no.
+Librerías para SEO:
+  -Sí necesitamos algo muy grande, usamos react-helmet.
+  -Sí necesitamos algo pequeño de SEO, react-head, que es mucho más ligera.
 
-serve:
-  -Una dependencia que se instala de forma global para correr los estaticos que creamos
-    de nuestras páginas.
-  -Se usa el comando: serve [nombre_carpeta]
+React Helmet:
+  -Importamos Helmet de forma nombrada.
+  -Dentro del JSX al inicio, colocamos <Helmet></Helmet> y dentro todas las etiquetas
+    que podrían ir en un Head de html.
+  -Tambien, al usar loading o error, podríamos colocar un helmet.
+  -Si queremos ver cuales etiquetas podríamos tener en un head: https://htmlhead.dev/
 
-Deploy con Vercel:
-  -Instalamos de forma global la dependencia vercel.
-  -En la carpeta del proyecto ejecutamos vercel.
-  -Escogemos la configuración:
-    .Set up and deploy: La carpeta del proyecto, confirmamos.
-    .scope: Sí tenemos varias cuentas, escogemos la que deseamos.
-    .Link: no.
-    .Nombre del proyecto.
-    .Directorio: ./
-    .Confirmamos los scripts con los que se ejecutará para el deploy.
-  -Con esto ya se hará el deploy sin configurar nada.
-  -Ahora, para mandar a producción, debemos correr el comando: vercel --prod. Con esto,
-    subimos al link con la dirección mas corta.
-  -Sí queremos volver a hacer deploy, volvemos a ejecutar el comando: vercel.
-  -Por ahora no está la integración con github, por lo que los cambios que se harán son
-    los que tendremos en nuestra carpeta en local.
-  
+Definición de useRef:
+  -Permite guardar un valor que se va a mantener entre renderizados y ejecuciones de
+    un hook.
+  -Sí en un componente tenemos una variable, esta variable se va a crear cada vez que
+    se renderiza el componente.
+  -Con useRef, evitamos que se cree en esos renderizados.
+
+Integración con GitHub para continuos deployment:
+  -Vamos al proyecto en Vercel.
+  -Click en 'Deploy with our Git Integrations'
+  -Agregamos el nombre del repositorio que tenemos en GitHub, damos save.
+  -Puede que se haga de una vez, o haya que dar permisos.
+  -En Gh, nos saltará un mensaje indicando que tenemos una nueva rama, damos en
+    comparar y pull Request, colocamos el mensaje y creamos la PR.
+  -Esto va a hacer un deploy, cuando termine, nos dejara en GH una url donde estará
+    el nuevo link para nuestra página.
+  -Hacemos merge. Con esto, en vercel ahorá se hara un deploy a nuestro repo de 
+    vercel.
+  -En necesario que como tenemos varios urls con el mismo sitio, definamos la 
+    canonical, para que google entienda cual es el principal.
+  -Para ello, colocamos la etiqueta en el head: <link rel=canonical href=https://sitio.com.
+  -Esto lo hacemos en todas nuestras páginas de nuestra app.
