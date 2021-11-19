@@ -1,80 +1,66 @@
-SEO con React y Deploy integrado con GitHub
+useReducer y tests de hooks con react-hooks-testing-library
 
-Problema:
-  -Tenemos un problema, cuando entramos al detalle de un gif, podemos verlo
-    sin problema, pero, sí estamos en ese detalle, y recargamos la página,
-    hay un error.
-  -Esto se debe a que en algún momento, en el contexto, estamos guardando
-    ese gif en especifico, pero, como no estamos pasando por donde
-    solicitamos todos los gifs, no lo va a encontrar.
-  -Tambien recordar, que no estamos pidiendo ningún gif en especifico a
-    la API desde los detalles, sino, se lo pedimos al context.
+Select - combobox:
+  -En React hacemos un combobox colocando la etiqueta select, como props un value y un handleChange para
+    controlar los cambios.
+  -Dentro colocamos cada <option> Que encerrarán el nombre de su opción.
+  -Sí queremos un titulo dentro del combobox, colocamos al inicio un option, con la prop disabled.
+  -Recordar que esta prop no tiene valor.
 
-Solución:
-  -Como solución, estamos creando una utilidad que solicite directamente
-    a la API el gif basandonos en su ID.
-  -Esta la usamos en un hook, aquí usamos el hook donde traemos todos
-    los gifs, de esto hacemos un fin basandonos en su ID.
-  -Sí encontro ese gif, lo devolvemos, de lo contrario, usamos la 
-    utilidad de petición de un gif.
+Rutas con segmentos opcionales:
+  -Podemos hacer que un segmento/parametro en una ruta sea opcional.
+  -Para ello, al final le colocamos un '?'.
+  -Ej: /:id?.
+  -Con esto no será neceario colocarlo.
 
-Redirect con wouter:
-  -Todos los routers tienen que tener un componente <redirect/>.
-  -Este lo que hará es retornarnos a la ruta que indique su prop 'to'.
-  -Lo que hacemos es que en lugar de retornar un JSX normal, solo 
-    retornamos este componente, y al ingresar al compontente donde
-    estemos retornando el redirect, nos redirige a la ruta indicada.
+Problema que soluciona el useReducer:
+  -Supongamos que por alguna razón, queremos contar las veces que vamos actualizando el input de busqueda.
+  -Esto implicaría agregar un estado que cuente las veces.
+  -El detalle, es que en el onChange del input vamos a tener dos cambios de estado, uno para el input, el otro
+    para las veces.
+  -Esto tomando en cuenta que el componente puede seguir creciendo tu lógica, lo que significa que empezará a
+    volverse imperativo, y deja de ser declarativo.
+  -Para esto nos ayudará el useReducer. Que tiene el mismo principio de los reducers de redux.
 
-404:
-  -Al no encontrar un gif, para crear un 404 con wouter, lo que hacemos
-    es crear la ruta /404, y redirigir hacia alla cuando hay un error.
-  -En el frontend, no creamos como tal un 404, ya que no indicamos al
-    navegador este error, eso lo hacemos desde el backend.
-  -Sin embargo, sí le damos la muestra al cliente de que algo malo 
-    ocurrió.
+Inicio con los reducers:
+  -En el SearchForm vamos a usar el reducer, para manejar el estado del keyword y de las veces.
+  -Para estos, ya no usaremos el useState.
+  -Usamos el useReducer() igual que el useState, nos devuelve un array con 2 posiciones:
+    .El estado: De donde sacaremos los elementos que usaremos en el componente.
+    .El dispatch: Función que recibirá por parametro los nuevos elementos con los que actualizaremos el estado,
+      estos pueden ser de cualquier tipo, número, string, objeto, array, etc.
+  -El useReducer() llevará dos parametros:
+    .Una constante llamada reducer (puede llamarse de cualquier forma), y un objeto, donde definiremos el
+      estado inicial. El estado inicial igual puede ser cualquier tipo de variable, pero como en este caso
+      manejamos dos datos (keyword y veces), usamos un objeto.
+    .En el estado inicial damos un valor inicial a cada elemento del estado inicial.
+  -Reducer:
+    .Puede ser una función afuera del componente.
+    .Tendrá dos parametros: el estado, y un param. El valor de este param lo definimos al usar el dispatch.
+    .Dentro retornaremos un objeto, este será el nuevo estado, por lo que, para no perder los datos del estado
+      anterior, dispersaremos los datos del estado, y luego actualizamos cada dato, según el param que nos
+      llegue, o manualmente, como hicimos en el caso de las veces.
+  -Para guardar el estado al recargar la página es que usamos el contexto.
+  -En nuestro caso, como queremos actualizar el estado cada vez que cambie el input, en el onChange es que 
+    haremos el dispatch.
 
-Hook para el SEO:
-  -Vamos primero a realizar un hook para el SEO, para mostrar como
-    funcionan desde el inicio.
-  -Para ello, en un hook, simplemente recibimos el titulo, y para colocarlo
-    en la pestaña, usamos: document.title = 'Nuevo titulo'.
-  -En cualquier página podemos ahora usar el hook, este por ahora no
-    returna nada, solo coloca el title.
-  -Esto tiene un problema, es que al usar el hook, ahora todas las
-    páginas tendrán el mismo title.
-  -Sí no necesitamos gran cosa, podríamos usar el hook useTitle que creamos, donde
-    manejamos tanto el titulo como la descripción de cada página.
+Actions:
+  -Supongamos que ahora queremos ingresar en el reducer el rating, habría que usar tambien el dispatch para
+    2 cambios.
+  -Ahora, en el dispatch, no pasaremos un valor, sino un objeto con dos elementos:
+    .type: una especie de nombre del action.
+    .payload: El valor que estabamos enviando al 'param'.
+  -Ahora, en el reducer, ya no usaremos 'param', sino action.
+  -Este action seguira siendo lo pasado por parametro al dispatch.
+  -Ahorá, depentiendo del action.type vamos a retornar un estado u otro, realizando cambios con el elemento
+    payload del action. Es practicamente igual, pero ahora manejamos un objeto, y estamos haciendo 
+    validaciones.
+  -Al final, sí no se cumple ninguna validación, solo devolvemos el estado.
+  -Importante: En caso de necesitarlo, podemos enviar un objeto como payload.
 
-Librerías para SEO:
-  -Sí necesitamos algo muy grande, usamos react-helmet.
-  -Sí necesitamos algo pequeño de SEO, react-head, que es mucho más ligera.
-
-React Helmet:
-  -Importamos Helmet de forma nombrada.
-  -Dentro del JSX al inicio, colocamos <Helmet></Helmet> y dentro todas las etiquetas
-    que podrían ir en un Head de html.
-  -Tambien, al usar loading o error, podríamos colocar un helmet.
-  -Si queremos ver cuales etiquetas podríamos tener en un head: https://htmlhead.dev/
-
-Definición de useRef:
-  -Permite guardar un valor que se va a mantener entre renderizados y ejecuciones de
-    un hook.
-  -Sí en un componente tenemos una variable, esta variable se va a crear cada vez que
-    se renderiza el componente.
-  -Con useRef, evitamos que se cree en esos renderizados.
-
-Integración con GitHub para continuos deployment:
-  -Vamos al proyecto en Vercel.
-  -Click en 'Deploy with our Git Integrations'
-  -Agregamos el nombre del repositorio que tenemos en GitHub, damos save.
-  -Puede que se haga de una vez, o haya que dar permisos.
-  -En Gh, nos saltará un mensaje indicando que tenemos una nueva rama, damos en
-    comparar y pull Request, colocamos el mensaje y creamos la PR.
-  -Esto va a hacer un deploy, cuando termine, nos dejara en GH una url donde estará
-    el nuevo link para nuestra página.
-  -Hacemos merge. Con esto, en vercel ahorá se hara un deploy a nuestro repo de 
-    vercel.
-  -En necesario que como tenemos varios urls con el mismo sitio, definamos la 
-    canonical, para que google entienda cual es el principal.
-  -Para ello, colocamos la etiqueta en el head: <link rel=canonical href=https://sitio.com.
-  -Esto lo hacemos en todas nuestras páginas de nuestra app.
+Buenas practicas:
+  -Los nombres de los type los estamos colocando en string, esto puede llegar a dar errores si nos equivocamos
+    a la hora de escribirlos.
+  -Para corregirlo usaremos un objeto que tendrá cada action, con un string, y cada elemento de ese objeto lo
+    usaremos tanto en el type del dispatch, como para hacer las validaciones.
+  -Otra buena practica es hacer las validaciones con switch, y no con ifs.

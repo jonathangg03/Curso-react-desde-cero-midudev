@@ -4,7 +4,7 @@ import getGifs from '../utils/getGifs'
 
 const INITIAL_PAGE = 0
 
-export function useGifs({ keyword } = { keyword: null }) {
+export function useGifs({ keyword, rating } = { keyword: null }) {
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(INITIAL_PAGE)
   const { gifs, setGifs } = useContext(GifsContext)
@@ -15,24 +15,24 @@ export function useGifs({ keyword } = { keyword: null }) {
     setLoading(true)
 
     //Sí no hay keyword al usar este hook, toma la keyword de la ultima busqueda.
-    getGifs({ keyword: keywordToUse }).then((gifs) => {
+    getGifs({ keyword: keywordToUse, rating }).then((gifs) => {
       setGifs(gifs)
       setLoading(false)
       localStorage.setItem('lastKeyword', keyword) //seteamos la ultima busqueda
     })
-  }, [keyword, keywordToUse, setGifs])
+  }, [keyword, keywordToUse, setGifs, rating])
 
   useEffect(() => {
     if (page === INITIAL_PAGE) return
 
     setLoadingNextPage(true)
 
-    getGifs({ keyword: keywordToUse, page }).then((nextGifs) => {
+    getGifs({ keyword: keywordToUse, rating, page }).then((nextGifs) => {
       setGifs((prevGifs) => {
         return prevGifs.concat(nextGifs)
       })
     })
-  }, [keywordToUse, page, setGifs])
+  }, [keywordToUse, page, setGifs, rating])
 
   return { loading, loadingNextPage, gifs, setPage }
 }

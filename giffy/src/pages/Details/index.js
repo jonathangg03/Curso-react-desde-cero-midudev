@@ -2,7 +2,6 @@ import Gif from '../../components/Gif'
 import useSingleGif from 'hooks/useSingleGif'
 import { Link } from 'wouter'
 import { Redirect } from 'wouter'
-import useTitle from 'hooks/useTitle'
 import { Helmet } from 'react-helmet'
 
 export default function Details({ params }) {
