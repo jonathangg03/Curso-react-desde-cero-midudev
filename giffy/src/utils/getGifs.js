@@ -3,11 +3,12 @@ import { API_KEY } from './settings'
 export default function getGifs({
   limit = 5,
   keyword = 'morty',
-  page = 0
+  page = 0,
+  rating = 'g'
 } = {}) {
   const API_URL = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${keyword}&limit=${limit}&offset=${
     page * limit
-  }&rating=g&lang=en`
+  }&rating=${rating}&lang=en`
   return fetch(API_URL)
     .then((res) => res.json())
     .then((response) => {

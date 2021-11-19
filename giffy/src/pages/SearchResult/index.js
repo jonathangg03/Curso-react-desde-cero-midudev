@@ -3,11 +3,12 @@ import debounce from 'just-debounce-it'
 import ListOfGifs from 'components/ListOfGifs'
 import { useGifs } from 'hooks/useGifs'
 import useNearScreen from 'hooks/useNearScreen'
+import SearchForm from 'components/SearchForm'
 import { Helmet } from 'react-helmet'
 
 export default function SearchResults({ params }) {
-  const { keyword } = params
-  const { loading, gifs, setPage } = useGifs({ keyword })
+  const { keyword, rating = 'g' } = params
+  const { loading, gifs, setPage } = useGifs({ keyword, rating })
   const externalRef = useRef() //Creamos externalRef porque useNearScreen al inicio no tiene un elemento del DOM como ref, entonces con el realizamos la validación.
   const { isNearScreen } = useNearScreen({
     externalRef: loading ? null : externalRef,
@@ -41,6 +42,7 @@ export default function SearchResults({ params }) {
       ) : (
         <>
           <h3>{decodeURI(keyword)}</h3>
+          <SearchForm initialKeyword={keyword} initialRating={rating} />
           <ListOfGifs gifs={gifs} />
           <div id='visor' ref={externalRef}></div>
         </>
