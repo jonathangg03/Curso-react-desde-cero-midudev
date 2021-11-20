@@ -9,6 +9,7 @@ import Login from 'pages/Login'
 import Header from 'components/Header'
 
 import './App.css'
+import Register from 'pages/Register'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path='/search/:keyword/:rating?' component={SearchResults} />
             <Route path='/gif/:id' component={Details} />
             <Route path='/login' component={Login} />
+            <Route path='/register' component={Register} />
             <Route path='/404' component={() => <h1>Error</h1>} />
           </GifsContextProvider>
         </section>

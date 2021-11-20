@@ -1,42 +1,79 @@
-Login y sesión de usuarios para guardar favoritos
+Registro de usuario con Formik, React.createPortal y gestión de favoritos
 
-Boolean()
-  -El metodo Boolean() retorna true o false dependiendo de lo que pasemos como parametro.
-  -Es una forma sencilla de hacer un if(variable).
+wouter useRoute: Validar sí nos encontramos en una ruta:
+  -El hook useRoute de wouter devuelve un array de dos posiciónes, pero por ahora solo usaremos
+    la primera.
+  -Devuelve un booleano, que valida sí el componente actual se está renderizando en la página que se coloque
+    como parametro.
+  -Con el podríamos hacer validaciones y renderizar o no, una cosa u otra.
 
-userContext:
-  -Estamos pasandole a toda la aplicación el jwt y el setJWT con el contexto.
-  -En un hook los traemos y lo usaremos para definir sí nos logeamos o deslogueamos.
-  -Sí nos vamos a logear, damos un valor al token, sí nos vamos a desloguear, damos null como valor.
-  -Exporta ambas funciones, junto con una variable que define sí está o no logeado dependiendo del valor
-    del JWT.
-  -Donde vayamos a usar el login y el logout vamos a usar ambas funciones, y en el header estaremos validando
-    sí está logueado.
+Ternaria doble:
+  -Para hacer una ternaria anidada sería: codicionanteA ? hacerA : condicionanteB ? : hacerB : hacerC
+  -Es el equivalente a hacer un else if, con un else al final.
 
-sessionStorage como estado inicial:
-  -Como estado inicial de useState podemos colocar un una función.
-  -Esto lo haremos en caso de querer pasar al estado inicial un calculo muy costoso, para que esa linea no se
-    este ejecutando muchas veces siendo muy pesada.
-  -En nuestro caso, en el contexto pasamos como estado inicial una función con el sessionStorage, esto para
-    definir sí estamos logeados o no.
+backdrop-filter: blur(5px):
+  -Con este ejemplo de estilo, hicimos que el fondo que coloca el modal para que la página principal
+    no se vea, tenga un estilo borroso.
 
--Recordar que session y local storage son inseguros.
+createPortal:
+  -En nuestro caso, hacemos el componente de modal normal en una función, pero lo que exportamos es otra
+    función que retorne createPortal de ReactDOM.
+  -Este tiene los mismos parametros que render().
 
-Favs:
-  -Para los favs estamos haciendo lo mismo que con el user, y estamos manejandolo en el useUser.
-  -El gif al que se le dió like, mediante la API, se guardará en un arrat que mantenga los likes a los que
-    un usuario dió like.
-  -Dentro del componente del favorite estamos validando sí a ese gif se le dio like, buscando en el array con
-    los likes, y renderizando una cosa distinta dependiendo sí el gif esta likeado o no.
-  -Para validar sí el gif esta dentro de ese array por medio del id del gif, usamos some en el array, que
-    devuelve true o false sí el elemento está dentro del array.
+Render props:
+  -Una render prop es cuando a un componente se le pasa como children una función, y esta retorna el 
+    componente que va a renderizar.
+  -Estas funciones tendran parametros, estas son información que se le pasará al componente que está
+    retornando.
 
-Obtener favs por medio de un JWT:
-  -El metodo GET como tal no se le pasa un body. Sí se puede, pero no es recomendable.
-  -La mejor opción siempre es pasar el header 'Authorization', y como valor el JWT.
-  -Esto hay que controlarlo desde la API.
-  -Este lo estamos haciendo desde el context, para obtenerlos desde el inicio, incluso cuando recarguemos la
-    página, ya que el jwt lo colocamos desde un inicio.
+Uso de Formik:
+  -Debemos instalarlo, la dependencia se llama formik.
+  -De ella, importamos Formik.
+  -Lo colocamos como un componente.
+  -Formik tiene como props obligatorias:
+    .initialValues: Recibe un objeto, que tendrá los valores iniciales de los inputs, por ejemplo, sí
+      tenemos un input con name 'email', colocaremos como key 'email', y su valor inicial.
+    .onSubmit: Esta llevará una función con toda la lógica que hará al hacer el submit. La función lleva por
+      parametro un elemento values, que es un objeto con toda la información ingresada por los input. Aquí 
+      hacemos el llamado a la API. No hacemos el preventDefault. 
+  -La render prop tendrá un objeto como parametro, con dos elementos: handleChange y handleSubmit. Con esos 
+    nombres exactos.
+  -Estos se colocarán, el handleChange a los inputs, y el handleSubmit al form en sus respectivos eventos.
+  -Los inptus deben tener un name, y deben coincidir con el colocado en el initialValues.
 
-Recomendación: Cuando usamos un web token, lo correcto podría ser enviar un mensaje al servidor para que 
-  invalide el jwt que usamos.
+isSubmitting:
+  -Este es un parametro que tendrá la función del render props.
+  -Esta nos sirve para hacer ciertas cosas mientras el envío de datos se está realizando.
+  -Formik sabe que el envío de datos se está realizando cuando se hace una llamada asincrona en el onSubmit.
+  -En nuestro caso lo usamos para deshabilitar el boton del envío mientras se hace el registro.
+
+Deshabilitar el boton de envío:
+  -En su prop 'disabled' colocamos un booleano (en nuestro caso isSubmitting). Con esto ya se desactiva.
+  -En el css, para cambiarle los estilos definimos: .button[disabled] {styles}. Esto indica que sí el elemento
+    tiene una propiedad disabled en true, aplicará los estilos.
+  -Debemos bajar su opacidad, y aplicar el estilo pointer-events: none;
+
+Errores de envío:
+  -Para manejar errores de envio, podemos tener un catch al realizar la llamada asincrona del onSubmit.
+  -La función del onSubmit tendrá como 2do parametro formikBag, este es un objeto con multiples utilidades.
+  -Usaremos la que se llama setFieldError, y la colocaremos dentro del catch. Recibirá dos parametros, el 
+    nombre del campo donde estará el error, y el error que mostrará. No usaremos por ahorá el error del catch,
+    pero puede que sí lo necesitemos.
+  -Para usar esos errores dentro del componente de la render prop, y mostrar mensajes, dentro de los 
+    parametros de la función traeremos errors.
+  -Este es un objeto con diferentes errores que podemos tener en el setFieldError. Donde las key serán el
+    primer parametro de ese metodo, entonces sí colocamos como primer parametro 'username' en setFieldError,
+    en el componente renderizaremos el mensaje con: errors.username.
+
+-Otra forma sería, en lugar de usar setFieldError usar setErrors, que funciona similar, pero en setFieldError
+  definimos donde está pasando el error, mientras que en setErrors solo colocamos el error.
+-El error de username no es bueno colocar que ya está usado, es mejor colocar que es invalido.
+
+Validaciones en los campos:
+  -Formik tiene tambien la prop 'validate' para hacer validaciones antes de que los datos sean enviados, como
+    sí algún input no se llenó, o sí el password no cumple requerimientos.
+  -Dicha prop llevará una función, con un parametro values, que es un objeto con los valores de los inputs.
+  -Aquí, para retornar errores, podemos definir un objeto errors, donde le agreguemos elementos con el nombre
+    del input que estamos validando, y como valor, un string con el error que queremos mostrar.
+  -Al final de todas las validaciones, retornamos el objeto.
+  -Estas las capturamos igual que con setFieldError, dentro del elemento errors de la renderProp.
