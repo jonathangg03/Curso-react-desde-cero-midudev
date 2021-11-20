@@ -25,9 +25,6 @@ export default function Details({ params }) {
       <Helmet>
         <title>{gif.title} | Giffy</title>
       </Helmet>
-      <Link to='/' className='home'>
-        <h1>GIFFY</h1>
-      </Link>
       <Gif {...gif} />
     </>
   )

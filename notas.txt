@@ -1,112 +1,42 @@
-useReducer y tests de hooks con react-hooks-testing-library
+Login y sesión de usuarios para guardar favoritos
 
-Select - combobox:
-  -En React hacemos un combobox colocando la etiqueta select, como props un value y un handleChange para
-    controlar los cambios.
-  -Dentro colocamos cada <option> Que encerrarán el nombre de su opción.
-  -Sí queremos un titulo dentro del combobox, colocamos al inicio un option, con la prop disabled.
-  -Recordar que esta prop no tiene valor.
+Boolean()
+  -El metodo Boolean() retorna true o false dependiendo de lo que pasemos como parametro.
+  -Es una forma sencilla de hacer un if(variable).
 
-Rutas con segmentos opcionales:
-  -Podemos hacer que un segmento/parametro en una ruta sea opcional.
-  -Para ello, al final le colocamos un '?'.
-  -Ej: /:id?.
-  -Con esto no será neceario colocarlo.
+userContext:
+  -Estamos pasandole a toda la aplicación el jwt y el setJWT con el contexto.
+  -En un hook los traemos y lo usaremos para definir sí nos logeamos o deslogueamos.
+  -Sí nos vamos a logear, damos un valor al token, sí nos vamos a desloguear, damos null como valor.
+  -Exporta ambas funciones, junto con una variable que define sí está o no logeado dependiendo del valor
+    del JWT.
+  -Donde vayamos a usar el login y el logout vamos a usar ambas funciones, y en el header estaremos validando
+    sí está logueado.
 
-Problema que soluciona el useReducer:
-  -Supongamos que por alguna razón, queremos contar las veces que vamos actualizando el input de busqueda.
-  -Esto implicaría agregar un estado que cuente las veces.
-  -El detalle, es que en el onChange del input vamos a tener dos cambios de estado, uno para el input, el otro
-    para las veces.
-  -Esto tomando en cuenta que el componente puede seguir creciendo tu lógica, lo que significa que empezará a
-    volverse imperativo, y deja de ser declarativo.
-  -Para esto nos ayudará el useReducer. Que tiene el mismo principio de los reducers de redux.
+sessionStorage como estado inicial:
+  -Como estado inicial de useState podemos colocar un una función.
+  -Esto lo haremos en caso de querer pasar al estado inicial un calculo muy costoso, para que esa linea no se
+    este ejecutando muchas veces siendo muy pesada.
+  -En nuestro caso, en el contexto pasamos como estado inicial una función con el sessionStorage, esto para
+    definir sí estamos logeados o no.
 
-Inicio con los reducers:
-  -En el SearchForm vamos a usar el reducer, para manejar el estado del keyword y de las veces.
-  -Para estos, ya no usaremos el useState.
-  -Usamos el useReducer() igual que el useState, nos devuelve un array con 2 posiciones:
-    .El estado: De donde sacaremos los elementos que usaremos en el componente.
-    .El dispatch: Función que recibirá por parametro los nuevos elementos con los que actualizaremos el estado,
-      estos pueden ser de cualquier tipo, número, string, objeto, array, etc.
-  -El useReducer() llevará dos parametros:
-    .Una constante llamada reducer (puede llamarse de cualquier forma), y un objeto, donde definiremos el
-      estado inicial. El estado inicial igual puede ser cualquier tipo de variable, pero como en este caso
-      manejamos dos datos (keyword y veces), usamos un objeto.
-    .En el estado inicial damos un valor inicial a cada elemento del estado inicial.
-  -Reducer:
-    .Puede ser una función afuera del componente.
-    .Tendrá dos parametros: el estado, y un param. El valor de este param lo definimos al usar el dispatch.
-    .Dentro retornaremos un objeto, este será el nuevo estado, por lo que, para no perder los datos del estado
-      anterior, dispersaremos los datos del estado, y luego actualizamos cada dato, según el param que nos
-      llegue, o manualmente, como hicimos en el caso de las veces.
-  -Para guardar el estado al recargar la página es que usamos el contexto.
-  -En nuestro caso, como queremos actualizar el estado cada vez que cambie el input, en el onChange es que 
-    haremos el dispatch.
+-Recordar que session y local storage son inseguros.
 
-Actions:
-  -Supongamos que ahora queremos ingresar en el reducer el rating, habría que usar tambien el dispatch para
-    2 cambios.
-  -Ahora, en el dispatch, no pasaremos un valor, sino un objeto con dos elementos:
-    .type: una especie de nombre del action.
-    .payload: El valor que estabamos enviando al 'param'.
-  -Ahora, en el reducer, ya no usaremos 'param', sino action.
-  -Este action seguira siendo lo pasado por parametro al dispatch.
-  -Ahorá, depentiendo del action.type vamos a retornar un estado u otro, realizando cambios con el elemento
-    payload del action. Es practicamente igual, pero ahora manejamos un objeto, y estamos haciendo 
-    validaciones.
-  -Al final, sí no se cumple ninguna validación, solo devolvemos el estado.
-  -Importante: En caso de necesitarlo, podemos enviar un objeto como payload.
+Favs:
+  -Para los favs estamos haciendo lo mismo que con el user, y estamos manejandolo en el useUser.
+  -El gif al que se le dió like, mediante la API, se guardará en un arrat que mantenga los likes a los que
+    un usuario dió like.
+  -Dentro del componente del favorite estamos validando sí a ese gif se le dio like, buscando en el array con
+    los likes, y renderizando una cosa distinta dependiendo sí el gif esta likeado o no.
+  -Para validar sí el gif esta dentro de ese array por medio del id del gif, usamos some en el array, que
+    devuelve true o false sí el elemento está dentro del array.
 
-Buenas practicas:
-  -Los nombres de los type los estamos colocando en string, esto puede llegar a dar errores si nos equivocamos
-    a la hora de escribirlos.
-  -Para corregirlo usaremos un objeto que tendrá cada action, con un string, y cada elemento de ese objeto lo
-    usaremos tanto en el type del dispatch, como para hacer las validaciones.
-  -Otra buena practica es hacer las validaciones con switch, y no con ifs.
+Obtener favs por medio de un JWT:
+  -El metodo GET como tal no se le pasa un body. Sí se puede, pero no es recomendable.
+  -La mejor opción siempre es pasar el header 'Authorization', y como valor el JWT.
+  -Esto hay que controlarlo desde la API.
+  -Este lo estamos haciendo desde el context, para obtenerlos desde el inicio, incluso cuando recarguemos la
+    página, ya que el jwt lo colocamos desde un inicio.
 
-Evitar el switch (Opcional):
-  -El switch que hicimos es una convención, normalmente nos vamos a encontrar con el
-    en muchos programas.
-  -Sin embargo, hay una forma de evitarlo, y se basa usando programación funcional.
-  -La idea es colocar en un objeto, donde cada key será el tipe, y cada value
-    una función que retorne un objeto, aquí haremos lo mismo que hacia cada opción 
-    del switch. Por parametro llevarán el state y action.
-  -Ahorá, dentro del reducer, en una constante guardamos el elemento del
-    objeto creado que tenga el key igual al type que se le está pasando al
-    reducer.
-  -Validaremos, sí esta tiene valor, retornamos su ejecución, de lo contrario,
-    retornamos solo el state.
-
--El dispatch podemos colocarlo en un custom hook para que el propio componente no
-  sepa de su propio estado. Esto lo hacemos pasando al hook todo lo relacionado a
-  useReducer, y en el componente sacamos lo necesario de ese hook.
--A veces es buena practica tener a los hooks en la carpeta del componente, cuando
-  solo serán usados por ese componente.
-
-react-hooks-testing-library:
-  -Una librería para testing de hooks.
-  -Es de los creadores de react-testing-library.
-  -Instalación: npm i @testing-library/react-hooks -D.
-  -Tambien hay que instalar react-test-renderer -D.
-
-Hacer testing de los hooks:
-  -Importamos act y renderHook de '@testing-library/react-hooks'. Tambien el hook.
-  -Usamos renderHook() y como parametro le pasamos una función que ejecute el hook.
-    .Debemos tener cuidado sí ese hook tiene parametros que requiere.
-    .Debemos pasarselos, o darles un valor por defecto.
-  -Este elemento retorna un objeto, que dentro de su elemento result.current tendrá
-    los elementos que retorna el hook.
-  -Sí el hook retorna alguna función, para ejecutarla debemos usar el metodo act(),
-    este lleva por parametro una función que va a ir ejecutando las funciónes que deseamos
-    de nuestro hook.
-  -Afuera del act, usamos el expect para hacer los test necesarios, lo que probaríamos serían
-    los datos actuales de ese hook, que los encontramos en el current del renderHook.
-
-Testing que hicimos:
-  -Sí la keyword cambia: Realizamos la función del updateKeyword y le dimos un valor, entonces
-    esperabamos que el nuevo valor de keyword sea igual al que colocamos en updateKeyword.
-  -Si colocabamos un parametro: Colocamos un parametro al hook, y validamos sí el keyword era
-    igual al parametro que pasamos.
-  -Ver sí las veces que escribiamos se actualizaba correctamente: Realizamos dos actualizaciones
-    al keyword, solamente cambiando una letra. Y el times del hook debía ser 2.
+Recomendación: Cuando usamos un web token, lo correcto podría ser enviar un mensaje al servidor para que 
+  invalide el jwt que usamos.
