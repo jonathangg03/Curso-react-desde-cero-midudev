@@ -1,4 +1,4 @@
-.register-btn {
+.register-btn[disabled] {
   opacity: 0.3;
   pointer-events: none;
 }

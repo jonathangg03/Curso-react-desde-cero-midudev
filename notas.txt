@@ -77,3 +77,42 @@ Validaciones en los campos:
     del input que estamos validando, y como valor, un string con el error que queremos mostrar.
   -Al final de todas las validaciones, retornamos el objeto.
   -Estas las capturamos igual que con setFieldError, dentro del elemento errors de la renderProp.
+
+Forma correcta de usar Formik:
+  -No hay problema en usar Formik como lo vimos anteriormente, pero hay formas de hacerlo menos
+    complicado, donde ya no necesitaremos traer parametros en la función
+    de la render prop.
+  -Vamos a traer tambien de Formik: Form, Field, ErrorMessage.
+  -En lugar del Form de React usamos el de Formik, input por Field (debemos colocar las props que llevarían 
+    los input), y ErrorMessage por las validaciones que haciamos con el Errors en el componente que estamos 
+    renderizando.
+  -Ahora, el handleSubmit del form, y el handleChange de los input no los necesitamos.
+  -Tampoco necesitaremos el errors. Esto lo sustituimos por el ErrorMessage.
+  -Como props, llevarán:  
+    .name: Un string con el name, que será el mismo nombre que usamos en initialValues y en los demás.
+    .component: En caso de que haya un error, en que tipo de elemento html se inyectará ese error.
+      Regularmente se usa div, pero puede ser cualquiera. Se coloca un string.
+
+Input controlados:
+  -Un input controlado significa que tenemos su valor dentro del estado de React.
+  -Un input no controlado es cuando confiamos su valor al DOM.
+
+react-hook-form:
+  -Lo instalamos con ese nombre. Importaremos su elemento useForm.
+  -Este nos retorna: handleSubmit, register, y formState, un objeto del que sacamos errors.
+  -Ahora, usaremos formularios normales de JSX.
+  -handleSubmit: En el onSubmit del form, debemos pasar handleSubmit, y como parametro llevará una función
+    que será la que maneje los datos y haga el llamado a la API.
+  -A los inputs les pasamos sus props normales pero la siguiente es una especial.
+  -register: pasaremos un objeto, en el cual, el primer elemento será un spride operator de register().
+    .Su primer parametro es el unico obligatorio, es un string con el nombre del campo, username, password, etc.
+    .Sú segundo es un objeto con configuración.
+  -errors: Un elemento que contiene los elementos del input que tengan errores. Estos errores se definen según la
+    config. colocada. Y por ejemplo, sí se configuró el username, el error estará en errors.username.
+
+errores:
+  -El detalle es que para mostrar mensajes de error hay que personalizarnos, ya que errors nos muestra un objeto con
+    los campos que tienen error, pero no nos muestra el error, solo nos dá información de este, por lo que según esa
+    información, validamos para mostrar mensajes de error.
+
+-Para las configuraciones de inputs es mejor verlas desde la documentación, ya que son muchas.

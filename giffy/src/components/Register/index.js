@@ -1,61 +1,48 @@
-import register from 'utils/register'
-import { Formik } from 'formik'
+import { useState } from 'react'
+import registerService from 'utils/register'
+import { useForm } from 'react-hook-form'
 import './index.css'
 
 export default function Register() {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors }
+  } = useForm()
+  const [registered, setRegistered] = useState(false)
+  const [isSubmitted, setIsSubmited] = useState(false)
+
+  const onSubmit = (values) => {
+    console.log(values)
+    registerService(values).then(() => {
+      setRegistered(true)
+      setIsSubmited(true)
+    })
+  }
+
+  if (registered) {
+    // Para que muestre eso sí ya nos registramos.
+    return <h2>Felicidades, su registro fue exitoso</h2>
+  }
+
   return (
     <>
-      <h2>Formulario de registro</h2>
-      <Formik
-        initialValues={{
-          username: '',
-          password: ''
-        }}
-        onSubmit={(values, { setFieldError }) => {
-          return register(values).catch(() => {
-            setFieldError('username', 'This username is not valid')
-          })
-        }}
-        validate={(values) => {
-          const errors = {}
-
-          if (!values.username) {
-            errors.username = 'Required username'
-          }
-
-          if (!values.password) {
-            errors.password = 'Required password'
-          } else if (values.password.length < 3) {
-            errors.password = 'Length must be greather than 3'
-          }
-
-          return errors
-        }}
-      >
-        {({ handleChange, handleSubmit, isSubmitting, errors }) => (
-          <form onSubmit={handleSubmit}>
-            <input
-              type='text'
-              name='username'
-              onChange={handleChange}
-              placeholder='Username'
-            ></input>
-            <input
-              type='password'
-              name='password'
-              placeholder='Password'
-              onChange={handleChange}
-            ></input>
-            <button className='register-btn' disabled={isSubmitting}>
-              Registrarse
-            </button>
-            <span>
-              {errors.username ? <p>{errors.username}</p> : ''}
-              {errors.password ? <p>{errors.password}</p> : ''}
-            </span>
-          </form>
-        )}
-      </Formik>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <input
+          type='text'
+          placeholder='Username'
+          {...register('username', { required: true })}
+        />
+        <input
+          type='password'
+          placeholder='Password'
+          {...register('password')}
+        />
+        <button className='register-btn' disabled={isSubmitted}>
+          Registrarse
+        </button>
+        {errors.username && 'Username is required'}
+      </form>
     </>
   )
 }
