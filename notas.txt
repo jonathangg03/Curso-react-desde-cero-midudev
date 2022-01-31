@@ -1,118 +1,92 @@
-Registro de usuario con Formik, React.createPortal y gestión de favoritos
+CSS in JSX y Styled Components con Emotion y React
 
-wouter useRoute: Validar sí nos encontramos en una ruta:
-  -El hook useRoute de wouter devuelve un array de dos posiciónes, pero por ahora solo usaremos
-    la primera.
-  -Devuelve un booleano, que valida sí el componente actual se está renderizando en la página que se coloque
-    como parametro.
-  -Con el podríamos hacer validaciones y renderizar o no, una cosa u otra.
+Emotion:
+  -Librería para agregar CSS en el JS.
+  -Tiene dos formas:
+    .CSS en JS: El más clasico.
+    .Styled components: Basado en la librería de Styled-components.
+  -Recomendado para proyectos pequeños o medianos. Para grandes es mejor tener archivos.
+  -Permite que cargue solo el CSS que se necesita.
+  -Instalación: npm i @emotion/core.
 
-Ternaria doble:
-  -Para hacer una ternaria anidada sería: codicionanteA ? hacerA : condicionanteB ? : hacerB : hacerC
-  -Es el equivalente a hacer un else if, con un else al final.
+Usar emotion con css in jsx:1
+  -Importamos su elemento css.
+  -Declaramos una variable.
+  -Le damos como valor el css con un tag template.
+  -Dentro de este colocamos los estilos.
+  -Esa variable la daremos como valor a la prop css del elemento donde aplicar esos estilos.
+  -Ahora, hay que configurar algunas cosas del componente ya que estamos usando create-react-app y no podemos
+    usar webpack y babel. Hay que decirle de donde va a sacar el jsx, y sí usamos React.fragment tambien.
+  -Para ello importamos primero jsx de emotion.
+  -Para ello, colocamos lo siguiente:
+    .JSX: /* @jsx jsx **/
+    .React.fragment: /* @jsxFrag React.Fragment jsx **/
+  -Cuando colocamos emotion, los componentes salen con un hash en la clase, esto se hace para vitar la colisión
+    entre classNames.
+  
+Tag template:
+  -Un tag template, es un metodo que recibirá como parametro todos los elementos dentro del
+    template string.
+  -Para usarlo colocamos el nombre del metodo, inmediatamente seguido del template string, y no colocamos
+    parentesis.
+  -Por ejemplo ese metodo css: css`estilos`.
 
-backdrop-filter: blur(5px):
-  -Con este ejemplo de estilo, hicimos que el fondo que coloca el modal para que la página principal
-    no se vea, tenga un estilo borroso.
+Otras notas de JSX in CSS:
+  -Otra forma de hacerlo es en lugar de los template strings, pasamos los parentesis del metodo, y los estilos
+    los pasamos dentro de un objeto.
+  -De esta forma, los values iran como strings. Y las propiedades que tienen más de una palabra se colocan o
+    en strings, o con CamelCase.
+  -Para agregar pseudo-clases, colocamos así:
+    ":hover" {
+      estilos;
+    }
+  -Tenemos tambien los metodos que usamos en css, pero debemos colocarlos como strings.
+  -Recordemos que como valores podríamos tambien agregar variables de js, porque todo lo estamos haciendo en
+    JS.
 
-createPortal:
-  -En nuestro caso, hacemos el componente de modal normal en una función, pero lo que exportamos es otra
-    función que retorne createPortal de ReactDOM.
-  -Este tiene los mismos parametros que render().
 
-Render props:
-  -Una render prop es cuando a un componente se le pasa como children una función, y esta retorna el 
-    componente que va a renderizar.
-  -Estas funciones tendran parametros, estas son información que se le pasará al componente que está
-    retornando.
+Usar emotion con styles-components:
+  -Debemos instalar: @emotion/styled.
+  -La importamos completa.
+  -Creamos una constante que tenga como valor un elemento de lo importado. Debe iniciar en mayuscula.
+  -Ese elemento será el nombre de la etiqueta html que deseamos usar.
+  -Este tendrá un tag template,y dentro llevará los estilos.
+  -Ahora, en el JSX, en lugar de las etiquetas html, colocaremos esa constante.
+  -Todo lo que se coloque dentro de los tags, serán hijos de la etiqueta que se está usando por lo que podemos
+    usar pseudoclases.
+  -El ejemplo de antes con el [disabled], se coloca solamente eso, seguido de los estilos.
 
-Uso de Formik:
-  -Debemos instalarlo, la dependencia se llama formik.
-  -De ella, importamos Formik.
-  -Lo colocamos como un componente.
-  -Formik tiene como props obligatorias:
-    .initialValues: Recibe un objeto, que tendrá los valores iniciales de los inputs, por ejemplo, sí
-      tenemos un input con name 'email', colocaremos como key 'email', y su valor inicial.
-    .onSubmit: Esta llevará una función con toda la lógica que hará al hacer el submit. La función lleva por
-      parametro un elemento values, que es un objeto con toda la información ingresada por los input. Aquí 
-      hacemos el llamado a la API. No hacemos el preventDefault. 
-  -La render prop tendrá un objeto como parametro, con dos elementos: handleChange y handleSubmit. Con esos 
-    nombres exactos.
-  -Estos se colocarán, el handleChange a los inputs, y el handleSubmit al form en sus respectivos eventos.
-  -Los inptus deben tener un name, y deben coincidir con el colocado en el initialValues.
+pseudo clases:
+  -Las colocamos igual que en el ejemplo anterior, pero sín ser strings.
+  -Las variables las hacemos de la misma forma.
 
-isSubmitting:
-  -Este es un parametro que tendrá la función del render props.
-  -Esta nos sirve para hacer ciertas cosas mientras el envío de datos se está realizando.
-  -Formik sabe que el envío de datos se está realizando cuando se hace una llamada asincrona en el onSubmit.
-  -En nuestro caso lo usamos para deshabilitar el boton del envío mientras se hace el registro.
+Agregar componentes ya existentes:
+  -Como ejemplo tenemos el Link de wouter.
+  -Para estilarlo, colocamos, en lugar del elemento html de syled, un parentesis, y dentro colocaríamos el
+    Link.
+  -styled(Link)`estilos`
 
-Deshabilitar el boton de envío:
-  -En su prop 'disabled' colocamos un booleano (en nuestro caso isSubmitting). Con esto ya se desactiva.
-  -En el css, para cambiarle los estilos definimos: .button[disabled] {styles}. Esto indica que sí el elemento
-    tiene una propiedad disabled en true, aplicará los estilos.
-  -Debemos bajar su opacidad, y aplicar el estilo pointer-events: none;
+Dos componentes con los mismos estilos pero siendo diferente tipo de componente:
+  -Por ejemplo, tenemos los mismos estilos para Link y Button, aunque ambos usan el Link, la idea es que sí
+    recibimos como prop href, usemos Link, sino, usemos Button.
+  -Creamos una variable string con todos los estilos.
+  -Hay dos formas de hacerlo:
+    .Despues del parentesis donde colocaremos el Link, colocamos otro parentesis donde colocamos la variable.
+    .Despues del parentesis colocamos unos template strings, y dentro colocamos la variable.
 
-Errores de envío:
-  -Para manejar errores de envio, podemos tener un catch al realizar la llamada asincrona del onSubmit.
-  -La función del onSubmit tendrá como 2do parametro formikBag, este es un objeto con multiples utilidades.
-  -Usaremos la que se llama setFieldError, y la colocaremos dentro del catch. Recibirá dos parametros, el 
-    nombre del campo donde estará el error, y el error que mostrará. No usaremos por ahorá el error del catch,
-    pero puede que sí lo necesitemos.
-  -Para usar esos errores dentro del componente de la render prop, y mostrar mensajes, dentro de los 
-    parametros de la función traeremos errors.
-  -Este es un objeto con diferentes errores que podemos tener en el setFieldError. Donde las key serán el
-    primer parametro de ese metodo, entonces sí colocamos como primer parametro 'username' en setFieldError,
-    en el componente renderizaremos el mensaje con: errors.username.
+withComponent:
+  -Esta sería otra forma de hacer lo anterior.
+  -Nos funciona en nuestro caso porque tiene props distintas, entonces, sí como prop recibimos href, usaremos
+    el Link, de lo contrario, usaremos el Button que vamos a explicar.
+  -El button será: Link.withComponent('button').
+  -Esto significa que use los estilos de Link, pero en un botton.
 
--Otra forma sería, en lugar de usar setFieldError usar setErrors, que funciona similar, pero en setFieldError
-  definimos donde está pasando el error, mientras que en setErrors solo colocamos el error.
--El error de username no es bueno colocar que ya está usado, es mejor colocar que es invalido.
-
-Validaciones en los campos:
-  -Formik tiene tambien la prop 'validate' para hacer validaciones antes de que los datos sean enviados, como
-    sí algún input no se llenó, o sí el password no cumple requerimientos.
-  -Dicha prop llevará una función, con un parametro values, que es un objeto con los valores de los inputs.
-  -Aquí, para retornar errores, podemos definir un objeto errors, donde le agreguemos elementos con el nombre
-    del input que estamos validando, y como valor, un string con el error que queremos mostrar.
-  -Al final de todas las validaciones, retornamos el objeto.
-  -Estas las capturamos igual que con setFieldError, dentro del elemento errors de la renderProp.
-
-Forma correcta de usar Formik:
-  -No hay problema en usar Formik como lo vimos anteriormente, pero hay formas de hacerlo menos
-    complicado, donde ya no necesitaremos traer parametros en la función
-    de la render prop.
-  -Vamos a traer tambien de Formik: Form, Field, ErrorMessage.
-  -En lugar del Form de React usamos el de Formik, input por Field (debemos colocar las props que llevarían 
-    los input), y ErrorMessage por las validaciones que haciamos con el Errors en el componente que estamos 
-    renderizando.
-  -Ahora, el handleSubmit del form, y el handleChange de los input no los necesitamos.
-  -Tampoco necesitaremos el errors. Esto lo sustituimos por el ErrorMessage.
-  -Como props, llevarán:  
-    .name: Un string con el name, que será el mismo nombre que usamos en initialValues y en los demás.
-    .component: En caso de que haya un error, en que tipo de elemento html se inyectará ese error.
-      Regularmente se usa div, pero puede ser cualquiera. Se coloca un string.
-
-Input controlados:
-  -Un input controlado significa que tenemos su valor dentro del estado de React.
-  -Un input no controlado es cuando confiamos su valor al DOM.
-
-react-hook-form:
-  -Lo instalamos con ese nombre. Importaremos su elemento useForm.
-  -Este nos retorna: handleSubmit, register, y formState, un objeto del que sacamos errors.
-  -Ahora, usaremos formularios normales de JSX.
-  -handleSubmit: En el onSubmit del form, debemos pasar handleSubmit, y como parametro llevará una función
-    que será la que maneje los datos y haga el llamado a la API.
-  -A los inputs les pasamos sus props normales pero la siguiente es una especial.
-  -register: pasaremos un objeto, en el cual, el primer elemento será un spride operator de register().
-    .Su primer parametro es el unico obligatorio, es un string con el nombre del campo, username, password, etc.
-    .Sú segundo es un objeto con configuración.
-  -errors: Un elemento que contiene los elementos del input que tengan errores. Estos errores se definen según la
-    config. colocada. Y por ejemplo, sí se configuró el username, el error estará en errors.username.
-
-errores:
-  -El detalle es que para mostrar mensajes de error hay que personalizarnos, ya que errors nos muestra un objeto con
-    los campos que tienen error, pero no nos muestra el error, solo nos dá información de este, por lo que según esa
-    información, validamos para mostrar mensajes de error.
-
--Para las configuraciones de inputs es mejor verlas desde la documentación, ya que son muchas.
+Validaciones mediante props:
+  -Cuando a un componente de styled components le pasamos una prop en el JSX, podemos recuperarla en el
+    styled.
+  -Para eso, dentro de los template tag, podemos colocar una evaluación (${}), aquí colocar una función.
+  -Esta función siempre como primer parametro será un objeto con las props.
+  -En esta función, al final, retornaremos otro string con los estilos, pero estos los podemos calcular
+    con distintas variables que vayamos haciendo dentro de la función.
+  -En nuestro ejemplo, a un elemento de lista le pasamos el indice como prop, validamos sí el mod de de ese
+    indice era par o impar, y según este, aplicamos un estilo u otro.
